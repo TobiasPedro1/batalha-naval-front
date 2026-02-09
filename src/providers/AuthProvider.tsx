@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { authService } from '@/services/authService';
 import { LoginInput, RegisterInput } from '@/types/api-requests';
 import { AuthResponse } from '@/types/api-responses';
@@ -23,12 +23,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const queryClient =  useQueryClient();
+  const pathname = usePathname();
+
 
   useEffect(() => {
     const savedUser = localStorage.getItem('username');
     const token = localStorage.getItem('token');
     if (token && savedUser) {
     setUser(savedUser);
+    if (pathname === '/login' || pathname === '/register' || pathname === '/') {
+        router.replace('/lobby');
+      }
   }
     setIsLoading(false);
   }, []);
@@ -48,14 +53,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async (credentials: LoginInput) => {
-    const data = await authService.login(credentials);
-    handleAuthSuccess(data);
+    try {
+      const data = await authService.login(credentials);
+      await handleAuthSuccess(data);
+    } catch (error) {
+      console.error("Erro no login:", error);
+      throw error; 
+    }
   };
 
   const register = async (credentials: RegisterInput) => {
-    await authService.register(credentials);
-    const data = await authService.login(credentials);
-    handleAuthSuccess(data) //redirect
+    try{
+      await authService.register(credentials);
+      await login(credentials)
+    }catch(error){
+      console.error("Erro ao Registrar",error);
+      throw error;
+    }
   };
 
   const logout = () => {

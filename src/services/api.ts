@@ -56,10 +56,11 @@ api.interceptors.response.use(
   (response) => response,
   async (error:AxiosError) =>{
     const originalRequest: any = error.config;
-
+    const isAuthRoute = originalRequest?.url?.includes('/login') || 
+                        originalRequest?.url?.includes('/register');
   
     // Handle 401 Unauthorized
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthRoute) {
 
       if (isRefreshing) {
         return Promise.reject(error); //change to queue later
@@ -83,6 +84,7 @@ api.interceptors.response.use(
         setToken(data.accessToken);
         setRefreshToken(data.refreshToken);
         isRefreshing=false;
+        
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         }

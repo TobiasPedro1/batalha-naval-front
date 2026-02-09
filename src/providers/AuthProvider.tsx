@@ -7,6 +7,7 @@ import { LoginInput, RegisterInput } from '@/types/api-requests';
 import { AuthResponse } from '@/types/api-responses';
 import { setUsername, removeUsername, removeToken, setToken, setRefreshToken, removeRefreshToken } from '@/lib/utils';
 import { da } from 'zod/locales';
+import { QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 interface AuthContextType {
   user: string | null;
   login: (credentials: LoginInput) => Promise<void>;
@@ -21,6 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const queryClient =  useQueryClient();
 
   useEffect(() => {
     const savedUser = localStorage.getItem('username');
@@ -32,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleAuthSuccess = async (data: AuthResponse) => {
+    queryClient.clear();
     console.log("Auth Success Data:", data);
     setUser(data.username);
     setUsername(data.username);
@@ -51,15 +54,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (credentials: RegisterInput) => {
     await authService.register(credentials);
-    router.replace('login')
+    const data = await authService.login(credentials);
+    handleAuthSuccess(data) //redirect
   };
 
   const logout = () => {
+
     setUser(null);
     removeUsername();
     removeToken();
     removeRefreshToken();
     document.cookie = "auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    queryClient.clear();
     router.replace('/login');
   };
 

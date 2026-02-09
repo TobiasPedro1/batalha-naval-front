@@ -31,10 +31,10 @@ const registerSchema = z
         /^[a-zA-Z0-9_]+$/,
         'Nome de usuário deve conter apenas letras, números e underscores'
       ),
-    email: z
+    /*email: z
       .string()
       .min(1, 'Email é obrigatório')
-      .email('Digite um email válido'),
+      .email('Digite um email válido'), */
     password: z
       .string()
       .min(6, 'A senha deve ter pelo menos 6 caracteres'),
@@ -111,7 +111,7 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: '',
-      email: '',
+     // email: '',
       password: '',
       confirmPassword: '',
     },
@@ -174,7 +174,7 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Email Field */}
+            {/* Email Field 
             <div className="space-y-2">
               <label
                 htmlFor="email"
@@ -192,7 +192,7 @@ export default function RegisterPage() {
                 {...register('email')}
               />
             </div>
-
+              */}
             {/* Password Field */}
             <div className="space-y-2">
               <label

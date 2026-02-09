@@ -15,6 +15,7 @@ export interface AuthResponse {
 
 export interface UserDetails extends UserProfile{
   username: string;
+  //colocar total de partidas talvez aq tbm
 }
 export interface Ship {
   id: string;

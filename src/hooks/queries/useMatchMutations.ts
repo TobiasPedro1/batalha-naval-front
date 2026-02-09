@@ -10,8 +10,7 @@ export const useCreateMatchMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    // Recebe o objeto completo (mode, aiDifficulty, etc)
-    mutationFn: (config: CreateMatch) => matchService.createMatch(config),
+    mutationFn: (config: CreateMatch) => matchService.createMatch(config),     // Recebe o objeto completo (mode, aiDifficulty, etc)
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['matches'] });
       if (typeof window !== 'undefined') {
@@ -28,13 +27,12 @@ export const useSetupMatchMutation = () => {
     mutationFn: (ships: SetupShipPayload[]) => {
 
       const storedId = localStorage.getItem('matchId');
-
       if (!storedId) {throw new Error("Match ID NOT FOUND");
       }
 
       const requestPayload: SetupMatchRequest = {
         matchId:storedId,
-        SetupShipPayload: ships 
+        ships: ships 
       };
 
       return matchService.placeShip(requestPayload);
@@ -52,7 +50,9 @@ export const useSetupMatchMutation = () => {
     }
   });
 };
-//
+
+
+// n funciona ainda, fazer logo o shoot e confirm
 export const useJoinMatchMutation = () => {
   const queryClient = useQueryClient();
 

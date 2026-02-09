@@ -104,8 +104,8 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
       const setupShipsPayload = ships.map((ship) => ({
         name: ship.type,
         size: SHIP_SIZES[ship.type],
-        startRow: ship.startRow,
-        startCol: ship.startCol,
+        startX: ship.startCol,
+        startY: ship.startRow,
         orientation: ShipOrientation.HORIZONTAL,
       }));
       // 2. Primeiro envia as posições

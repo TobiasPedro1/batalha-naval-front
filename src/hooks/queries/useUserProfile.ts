@@ -34,6 +34,7 @@ export const useUserProfile = () => {
         : '';
         return {
         ...apiData,
+        gamesPlayed: apiData.wins + apiData.losses,
         username: storedUsername || 'JOGADOR',
       }
     },

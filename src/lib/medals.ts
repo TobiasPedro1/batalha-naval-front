@@ -4,7 +4,7 @@
  * Defines all available medals and their unlock criteria.
  */
 import { Medal } from '@/components/profile/MedalBadge';
-import { User } from '@/types/api-responses';
+import { UserDetails } from '@/types/api-responses';
 
 /**
  * Medal definitions with unlock criteria
@@ -16,8 +16,8 @@ export const MEDAL_DEFINITIONS = [
     description: 'Vença sua primeira batalha naval',
     icon: '🏆',
     requirement: 'Vencer 1 partida',
-    checkUnlocked: (user: User) => user.wins >= 1,
-    getProgress: (user: User) => ({ current: user.wins, max: 1 }),
+    checkUnlocked: (user: UserDetails) => user.wins >= 1,
+    getProgress: (user: UserDetails) => ({ current: user.wins, max: 1 }),
   },
   {
     id: 'veteran',
@@ -25,8 +25,8 @@ export const MEDAL_DEFINITIONS = [
     description: 'Participe de 10 batalhas',
     icon: '🎮',
     requirement: 'Jogar 10 partidas',
-    checkUnlocked: (user: User) => user.gamesPlayed >= 10,
-    getProgress: (user: User) => ({ current: user.gamesPlayed, max: 10 }),
+    checkUnlocked: (user: UserDetails) => user.gamesPlayed >= 10,
+    getProgress: (user: UserDetails) => ({ current: user.gamesPlayed, max: 10 }),
   },
   {
     id: 'five-wins',
@@ -34,8 +34,8 @@ export const MEDAL_DEFINITIONS = [
     description: 'Alcance 5 vitórias',
     icon: '⭐',
     requirement: 'Vencer 5 partidas',
-    checkUnlocked: (user: User) => user.wins >= 5,
-    getProgress: (user: User) => ({ current: user.wins, max: 5 }),
+    checkUnlocked: (user: UserDetails) => user.wins >= 5,
+    getProgress: (user: UserDetails) => ({ current: user.wins, max: 5 }),
   },
   {
     id: 'ten-wins',
@@ -43,8 +43,8 @@ export const MEDAL_DEFINITIONS = [
     description: 'Conquiste 10 vitórias',
     icon: '💎',
     requirement: 'Vencer 10 partidas',
-    checkUnlocked: (user: User) => user.wins >= 10,
-    getProgress: (user: User) => ({ current: user.wins, max: 10 }),
+    checkUnlocked: (user: UserDetails) => user.wins >= 10,
+    getProgress: (user: UserDetails) => ({ current: user.wins, max: 10 }),
   },
   {
     id: 'champion',
@@ -52,8 +52,8 @@ export const MEDAL_DEFINITIONS = [
     description: 'Vença 25 batalhas e prove sua superioridade',
     icon: '👑',
     requirement: 'Vencer 25 partidas',
-    checkUnlocked: (user: User) => user.wins >= 25,
-    getProgress: (user: User) => ({ current: user.wins, max: 25 }),
+    checkUnlocked: (user: UserDetails) => user.wins >= 25,
+    getProgress: (user: UserDetails) => ({ current: user.wins, max: 25 }),
   },
   {
     id: 'legend',
@@ -61,8 +61,8 @@ export const MEDAL_DEFINITIONS = [
     description: 'Alcance o ápice com 50 vitórias',
     icon: '🌟',
     requirement: 'Vencer 50 partidas',
-    checkUnlocked: (user: User) => user.wins >= 50,
-    getProgress: (user: User) => ({ current: user.wins, max: 50 }),
+    checkUnlocked: (user: UserDetails) => user.wins >= 50,
+    getProgress: (user: UserDetails) => ({ current: user.wins, max: 50 }),
   },
   {
     id: 'perfect-record',
@@ -70,8 +70,8 @@ export const MEDAL_DEFINITIONS = [
     description: 'Mantenha 100% de vitórias com pelo menos 5 jogos',
     icon: '🛡️',
     requirement: '5+ jogos sem derrotas',
-    checkUnlocked: (user: User) => user.gamesPlayed >= 5 && user.losses === 0,
-    getProgress: (user: User) => ({ 
+    checkUnlocked: (user: UserDetails) => user.gamesPlayed >= 5 && user.losses === 0,
+    getProgress: (user: UserDetails) => ({ 
       current: user.losses === 0 ? user.gamesPlayed : 0, 
       max: 5 
     }),
@@ -82,8 +82,8 @@ export const MEDAL_DEFINITIONS = [
     description: 'Continue lutando mesmo após 10 derrotas',
     icon: '💪',
     requirement: 'Sofrer 10 derrotas',
-    checkUnlocked: (user: User) => user.losses >= 10,
-    getProgress: (user: User) => ({ current: user.losses, max: 10 }),
+    checkUnlocked: (user: UserDetails) => user.losses >= 10,
+    getProgress: (user: UserDetails) => ({ current: user.losses, max: 10 }),
   },
   {
     id: 'high-win-rate',
@@ -91,11 +91,11 @@ export const MEDAL_DEFINITIONS = [
     description: 'Mantenha uma taxa de vitória acima de 70% com 10+ jogos',
     icon: '🧠',
     requirement: '70%+ de vitórias (mín. 10 jogos)',
-    checkUnlocked: (user: User) => {
+    checkUnlocked: (user: UserDetails) => {
       if (user.gamesPlayed < 10) return false;
       return (user.wins / user.gamesPlayed) >= 0.7;
     },
-    getProgress: (user: User) => ({ 
+    getProgress: (user: UserDetails) => ({ 
       current: Math.min(user.gamesPlayed, 10), 
       max: 10 
     }),
@@ -106,8 +106,8 @@ export const MEDAL_DEFINITIONS = [
     description: 'Participe de 100 batalhas épicas',
     icon: '🎖️',
     requirement: 'Jogar 100 partidas',
-    checkUnlocked: (user: User) => user.gamesPlayed >= 100,
-    getProgress: (user: User) => ({ current: user.gamesPlayed, max: 100 }),
+    checkUnlocked: (user: UserDetails) => user.gamesPlayed >= 100,
+    getProgress: (user: UserDetails) => ({ current: user.gamesPlayed, max: 100 }),
   },
   {
     id: 'comeback-king',
@@ -135,7 +135,7 @@ export const MEDAL_DEFINITIONS = [
  * @param user - User profile data
  * @returns Array of medals with unlocked states
  */
-export const getUserMedals = (user: User): Medal[] => {
+export const getUserMedals = (user: UserDetails): Medal[] => {
   return MEDAL_DEFINITIONS.map((def) => {
     const unlocked = def.checkUnlocked(user);
     const progress = def.getProgress(user);

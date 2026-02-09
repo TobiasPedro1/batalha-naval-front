@@ -1,35 +1,25 @@
-// Enums e tipos do jogo
-
+// Enums e tipos do jogo 
 export enum CellState {
-  WATER = 'WATER',
-  SHIP = 'SHIP',
-  HIT = 'HIT',
-  MISS = 'MISS',
+  WATER = 0,
+  SHIP = 1,
+  HIT = 2,
+  MISS = 3,
 }
-
 export enum ShipOrientation {
-  HORIZONTAL = 0,
-  VERTICAL = 1,
+  HORIZONTAL = 'Horizontal',
+  VERTICAL = 'Vertical',
 }
-
-export enum GamePhase {
-  SETUP = 'SETUP',
-  BATTLE = 'BATTLE',
-  FINISHED = 'FINISHED',
-}
-
 export enum GameStatus {
-  WAITING = 'WAITING',
-  IN_PROGRESS = 'IN_PROGRESS',
-  FINISHED = 'FINISHED',
+  SETUP = 0,
+  BATTLE = 1,
+  FINISHED = 2,
 }
-
 export enum ShipType {
-  CARRIER = 'CARRIER',         // 5 células
-  BATTLESHIP = 'BATTLESHIP',   // 4 células
-  CRUISER = 'CRUISER',         // 3 células
-  SUBMARINE = 'SUBMARINE',     // 3 células
-  DESTROYER = 'DESTROYER',     // 2 células
+  PORTA_AVIAO = 'Porta-Aviões',         // 5 células
+  ENCOURACADO = 'Encouraçado',   // 4 células
+  SUBMARINE = 'Submarino',         // 3 células
+  DESTROYER = 'Destroyer',     // 3 células
+  PATRULHA = 'Patrulha',     // 2 células 
 }
 
 export type Coordinate = {

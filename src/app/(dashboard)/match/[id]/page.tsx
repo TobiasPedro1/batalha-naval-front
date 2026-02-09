@@ -2,11 +2,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { useMatchQuery } from '@/hooks/queries/useMatchQuery';
-import { GamePhase } from '@/types/game-enums';
 import SetupPhase from './SetupPhase';
 import BattlePhase from './BattlePhase';
+import { GameStatus } from '@/types/game-enums';
 
 export default function MatchPage() {
   const [matchId, setMatchId] = useState<string | null>(null);
@@ -21,12 +19,10 @@ export default function MatchPage() {
     return <div>Identificando partida local...</div>;
   }
 
-  // Como não existe GET, assumimos que se o usuário caiu aqui, 
-  // ele precisa primeiro configurar os navios.
-  // Criamos um objeto de partida "fake" apenas para o SetupPhase não quebrar
+ //PLACE HOLDER DE UMA PARTIDA Pois ja foi configurado no front e no back nao existe getmatch, ta sendo armazenado no local storage e sendo enviado a cada requisição( aqui precisa mudar dps)
   const localMatch = {
     id: matchId,
-    phase: GamePhase.SETUP,
+    phase: GameStatus.SETUP,
     player1: { username: "Comandante", isReady: false }
   };
 

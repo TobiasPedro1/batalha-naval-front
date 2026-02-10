@@ -11,6 +11,7 @@ import { useUserProfile } from '@/hooks/queries/useUserProfile';
 import { useAuth } from '@/providers/AuthProvider';
 import { log } from 'console';
 import Image from 'next/image';
+import { Anchor } from 'lucide-react';
 
 export default function DashboardLayout({
   children,
@@ -43,8 +44,8 @@ export default function DashboardLayout({
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
            <a href="#" className="flex items-center gap-2 text-xl font-bold text-slate-100 transition-colors hover:text-cyan-400">
-           ⚓
-            <span>Batalha Naval</span>
+            <Anchor className='h-8 w-8 text-cyan-400'></Anchor>
+            <span>  Batalha Naval</span>
           </a>
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
               <Link href="/lobby"className="text-cyan-400 transition-colors hover:text-cyan-300">Lobby</Link>
@@ -66,7 +67,7 @@ export default function DashboardLayout({
                 <Image src="/mortyy.jpg" alt="@dimas" width={50} height={60} className="relative h-10 w-10 rounded-full border border-slate-700 p-0 hover:bg-slate-800"></Image>
           </Button>
           <Button onClick={handleLogout} variant="outline"size="sm" className="text-red-400 hover:bg-red-950/30 focus:bg-red-950/30 cursor-pointer">
-              Logout  {/* dps vou fazer baixando */}
+              Logout  
           </Button>  
           
           </div>
@@ -74,7 +75,7 @@ export default function DashboardLayout({
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-6">
         {children}
       </main>
     </div>

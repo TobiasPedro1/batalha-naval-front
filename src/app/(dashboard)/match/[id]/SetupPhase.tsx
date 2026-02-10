@@ -13,6 +13,7 @@ import {
   
   useSetupMatchMutation,
 } from '@/hooks/queries/useMatchMutations';
+import { useEffect } from 'react';
 
 interface SetupPhaseProps {
   match: Match;
@@ -30,7 +31,13 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
     isShipPlaced,
     allShipsPlaced,
   } = useSetupStore();
-
+    
+  useEffect(() => {
+    return () => {
+      console.log("Limpando tabuleiro ");
+      clearBoard();
+    };
+  }, [clearBoard]);
   // Hooks de Mutation
   const setupMatch = useSetupMatchMutation();
   //const confirmSetup = useConfirmSetupMutation(match.id);
@@ -104,8 +111,8 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
       const setupShipsPayload = ships.map((ship) => ({
         name: ship.type,
         size: SHIP_SIZES[ship.type],
-        startRow: ship.startRow,
-        startCol: ship.startCol,
+        startX: ship.startCol,
+        startY: ship.startRow,
         orientation: ShipOrientation.HORIZONTAL,
       }));
       // 2. Primeiro envia as posições

@@ -32,5 +32,5 @@ export interface CreateMatch {
 
 export interface SetupMatchRequest {
   matchId: string
-  SetupShipPayload: SetupShipPayload[]
+  ships: SetupShipPayload[]
 }

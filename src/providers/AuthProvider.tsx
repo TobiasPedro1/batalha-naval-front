@@ -6,8 +6,8 @@ import { authService } from '@/services/authService';
 import { LoginInput, RegisterInput } from '@/types/api-requests';
 import { AuthResponse } from '@/types/api-responses';
 import { setUsername, removeUsername, removeToken, setToken, setRefreshToken, removeRefreshToken } from '@/lib/utils';
-import { da } from 'zod/locales';
-import { QueryClientProvider, useQueryClient } from '@tanstack/react-query';
+import {  useQueryClient } from '@tanstack/react-query';
+
 interface AuthContextType {
   user: string | null;
   login: (credentials: LoginInput) => Promise<void>;

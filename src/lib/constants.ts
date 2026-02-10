@@ -4,25 +4,25 @@ import { ShipType } from '@/types/game-enums';
 export const GRID_SIZE = 10;
 
 export const SHIP_SIZES: Record<ShipType, number> = {
-  [ShipType.CARRIER]: 5,
-  [ShipType.BATTLESHIP]: 4,
-  [ShipType.CRUISER]: 3,
+  [ShipType.PORTA_AVIAO]: 5,
+  [ShipType.ENCOURACADO]: 4,
+  [ShipType.DESTROYER]: 3,
   [ShipType.SUBMARINE]: 3,
-  [ShipType.DESTROYER]: 2,
+  [ShipType.PATRULHA]: 2,
 };
 
 export const SHIP_NAMES: Record<ShipType, string> = {
-  [ShipType.CARRIER]: 'Porta-aviões',
-  [ShipType.BATTLESHIP]: 'Encouraçado',
-  [ShipType.CRUISER]: 'Cruzador',
+  [ShipType.PORTA_AVIAO]: 'Porta-aviões',
+  [ShipType.ENCOURACADO]: 'Encouraçado',
+  [ShipType.PATRULHA]: 'Patrulha',
   [ShipType.SUBMARINE]: 'Submarino',
   [ShipType.DESTROYER]: 'Destroyer',
 };
 
 export const FLEET_COMPOSITION = [
-  ShipType.CARRIER,
-  ShipType.BATTLESHIP,
-  ShipType.CRUISER,
+  ShipType.PORTA_AVIAO,
+  ShipType.ENCOURACADO,
+  ShipType.PATRULHA,
   ShipType.SUBMARINE,
   ShipType.DESTROYER,
 ];

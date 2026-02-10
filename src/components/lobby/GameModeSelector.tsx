@@ -54,18 +54,20 @@ export const GameModeSelector: React.FC = () => {
   const joinMatch = useJoinMatchMutation();
   const { data: matches, isLoading: isLoadingMatches } = useMatchListQuery();
 
+  //NAO FAZ nada ainda pq n existe um get match no back
   const handleJoinMatch = async (matchId: string) => {
     try {
-      const match = await joinMatch.mutateAsync(matchId);
-      router.push(`/match/${match.id}`);
+      //const match = await joinMatch.mutateAsync(matchId);
+      //router.push(`/match/${match.id}`);
     } catch (error) {
-      console.error('Erro ao entrar na partida:', error);
+      //console.error('Erro ao entrar na partida:', error);
     }
   };
 
+  //TODO: 
   // Filter available matches (waiting for opponent)
   const availableMatches = matches?.filter(
-    (match) => match.status === GameStatus.WAITING && !match.player2
+    (match) => match.status === GameStatus.SETUP && !match.player2 // TODO: tem que ver isso dps 
   ) || [];
   
   // PvE State

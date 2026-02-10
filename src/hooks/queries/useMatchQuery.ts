@@ -16,8 +16,8 @@ export const useMatchQuery = (matchId: string, enabled: boolean = true) => {
 export const useMatchListQuery = () => {
   return useQuery({
     queryKey: ['matches'],
-    queryFn: () => matchService.listMatches(),
-    refetchInterval: 5000, // Atualiza lista a cada 5 segundos
+    queryFn: () => matchService.listMatches(), //n faz nada ainda pq isso n existe no back
+    refetchInterval: 600000, // Atualiza lista a cada 10 min -> pra n ficar mandando toda hr ja que n ta implementado
   });
 };
 

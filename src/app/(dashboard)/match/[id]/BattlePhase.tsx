@@ -11,7 +11,7 @@ import { FleetStatus } from '@/components/game/HUD/FleetStatus';
 import { GameControls } from '@/components/game/HUD/GameControls';
 import { Button } from '@/components/ui/Button';
 import { useShootMutation, useForfeitMutation } from '@/hooks/queries/useMatchMutations';
-import { GamePhase, CellState } from '@/types/game-enums';
+import { GameStatus, CellState } from '@/types/game-enums';
 import { getToken } from '@/lib/utils';
 import { GRID_SIZE } from '@/lib/constants';
 
@@ -25,18 +25,17 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
   const forfeit = useForfeitMutation(match.id);
   const [lastShot, setLastShot] = useState<{ hit: boolean; message: string } | null>(null);
 
-  // Determina qual jogador é o usuário atual
-  const token = getToken();
-  // TODO: Decodificar token para pegar userId (simplificado aqui)
+  const token = getToken();   // Determina qual jogador é o usuário atual
+  // TODO: so ta implementado contra ia
   const isPlayer1 = true; // Placeholder - implementar lógica real
   
   const currentPlayer = isPlayer1 ? match.player1 : match.player2;
   const opponent = isPlayer1 ? match.player2 : match.player1;
   
   const isMyTurn = match.currentTurn === currentPlayer?.id;
-  const isFinished = match.phase === GamePhase.FINISHED;
+  const isFinished = match.status === GameStatus.FINISHED;
 
-  // Grids (simplificado - idealmente viriam do match.player1.board e match.player2.board)
+  // simplificado -> ainda falta implementar o multiplayer
   const myGrid = currentPlayer?.board?.grid || Array(GRID_SIZE).fill(null).map(() => 
     Array(GRID_SIZE).fill(CellState.WATER)
   );
@@ -118,7 +117,7 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
           )}
         </div>
 
-        {/* Grids lado a lado */}
+        {/* Grid lado a lado */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
           {/* Radar do Oponente */}
           <div className="flex justify-center">

@@ -53,10 +53,10 @@ export const UserStatsCard: React.FC = () => {
 
   if (isError) {
     return (
-      <Card>
+      <Card className='rounded-md border border-slate-800 bg-slate-900/50 backdrop-blur-sm shadow-xl overflow-hidden h-half' >
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span className="text-2xl">📊</span>
+            <span className="text-2xl"></span>
             Estatísticas
           </CardTitle>
         </CardHeader>
@@ -103,29 +103,29 @@ export const UserStatsCard: React.FC = () => {
   return (
     <Card className='border-slate-800 bg-slate-900/50 backdrop-blur-sm shadow-xl overflow-hidden h-half'>
      <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-        🏆{/*<Trophy className="w-32 h-32 text-cyan-500" />*/}
+        <Trophy className="w-32 h-32 text-cyan-500" />
       </div>
-     <CardHeader className="pb-2">
+     <CardHeader className="py-8   ">
         <CardTitle className="flex items-center gap-2 text-cyan-400">
           <Medal className="w-5 h-5" />  Estatísticas
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 relative z-10">
         {/* User Info & Rank */}
-       <div className="flex items-center gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+       <div className="flex items-center gap-4 bg-slate-800/50 p-0 rounded-xl border border-slate-700/50">
           <div className="relative">
-            <div className="h-16 w-16 border-2 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                <Image src="/mortyy.jpg" alt="@dimas" width={150} height={150} className="h-16 w-16 border-2 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)]"></Image>
+            <div className="h-20 w-20 border-2 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                <Image src="/mortyy.jpg" alt="@dimas" width={150} height={150} className="border-2 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)]"></Image>
             </div>
             <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-900">
-              {user.wins}
+              {rank.icon}
             </div>
           </div>
           <div>
             <h3 className="text-xl font-bold text-white">{user.username}</h3>
             <div className="flex items-center gap-1 text-amber-400 text-sm font-medium">
-              <span className="text-xs">{rank.icon}</span>
               <span>{rank.title}</span>
+              {/*<span className="text-xs">{rank.icon}</span> */ }
             </div>
           </div>
         </div>
@@ -135,23 +135,23 @@ export const UserStatsCard: React.FC = () => {
           <StatItem
             label= "Vitórias"
             value={user.wins}
-            icon={<Trophy className="w-5 h-5 text-amber-400 mb-1" />}
+            icon={<Trophy className="w-6 h-6 text-amber-400 mb-1" />}
             highlight 
           />
           <StatItem
             label="Derrotas"
             value={user.losses}
-            icon={<Swords className="w-5 h-5 text-red-400 mb-1" />}
+            icon={<Swords className="w-6 h-6 text-red-400 mb-1" />}
           />
           <StatItem
             label="Partidas"
             value={gamesPlayed}
-            icon={<Target className="w-5 h-5 text-purple-400 mb-1" />}
+            icon={<Target className="w-6 h-6 text-cyan-400 mb-1" />}
           />
           <StatItem
             label="Taxa de Vitória"
             value={winRate}
-            icon={<Crosshair className="w-5 h-5 text-green-400 mb-1" />}
+            icon={<Crosshair className="w-6 h-6 text-green-400 mb-1" />}
             highlight
           />
         </div>
@@ -165,7 +165,7 @@ export const UserStatsCard: React.FC = () => {
           <div className="h-2 bg-naval-border rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-naval-action to-naval-action-hover transition-all duration-500"
-              style={{ width: `${Math.min((user.wins / 10) * 100, 100)}%` }}
+              style={{ width: `${Math.min((user.wins / 10) * 100, 100)}%` }} // TODO: Aqui nao ta funcionando ainda, dar um jeito de pegar um, nextrank
             />
           </div>
         </div>

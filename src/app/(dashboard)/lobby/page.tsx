@@ -44,28 +44,28 @@ export default function LobbyPage() {
           <UserStatsCard />
           
           {/* Quick Actions */}
-          <Card className='rounded-md border border-slate-800 bg-slate-900/50 backdrop-blur-sm shadow-xl overflow-hidden h-half'>
-            <CardHeader className="pb-3 ">
-              <CardTitle className="flex items-center gap-2 text-amber-400">
-                  <Zap className="w-5 h-5" />
+          <Card className='p-2 pl-5  rounded-md border border-slate-800 bg-slate-900/50 backdrop-blur-sm shadow-xl overflow-hidden h-half'>
+            <CardHeader className="pb-3 px-5 ">
+              <CardTitle className="flex items-center gap-5 text-cyan-400">
+                  <Zap className="w-6 h-6" />
                       Ações Rápidas
                 </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="p-1 space-y-3 justify-start">
               <Button
                 variant="link"
-                className="w-full justify-start text-slate-300 hover:text-white border-slate-700 hover:bg-slate-800 hover:border-cyan-500/50 transition-all group"
+                className="w-full p-4 justify-start text-slate-300 hover:text-white border-slate-700 hover:bg-slate-800 hover:border-cyan-500/50 transition-all group"
                 onClick={() => router.push('/profile')}>
-                <User className="mr-3 h-4 w-4 text-cyan-500 group-hover:text-cyan-400" />
+                <User className=" mr-3 h-6 w-6 text-white-500 group-hover:text-white-400" />
                     Ver Perfil Completo
               </Button>
               <Button
                 variant="link"
-                className="w-full justify-start text-slate-300 hover:text-white border-slate-700 hover:bg-slate-800 hover:border-cyan-500/50 transition-all group"
+                className="w-full p-4 justify-start text-slate-300 hover:text-white border-slate-700 hover:bg-slate-800 hover:border-cyan-500/50 transition-all group"
                 onClick={() => router.push('/lobby')}
               >
-                <ScrollText className="mr-3 h-4 w-4 text-purple-500 group-hover:text-purple-400" />
-          Histórico de Batalhas
+                <ScrollText className="mr-3 h-6 w-6 text-purple-500 group-hover:text-purple-400" />
+          Histórico de Batalhas (FALTA NO BACK) {/** TODO:IMLEMENT */}
               </Button>
             </CardContent>
           </Card>
@@ -81,8 +81,8 @@ export default function LobbyPage() {
           {/* Available Matches List */}
           
         </div>
-        <div className="lg:col-span-8 space-y-6">
-          <Leaderboard></Leaderboard>
+        <div className="display-flex center h-full ">
+          <Leaderboard ></Leaderboard>
         </div>
       </div>
     </div>

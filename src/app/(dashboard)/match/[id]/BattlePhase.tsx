@@ -118,9 +118,16 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
   // ─── Estado do Modo Dinâmico ───────────────────────────────────────────────
   const [selectedShipId, setSelectedShipId] = useState<string | null>(null);
   const [hasMovedThisTurn, setHasMovedThisTurn] = useState(false);
-  // Se o backend rejeitar o primeiro move com "só é permitida no modo Dinâmico",
-  // desabilita os controles para o resto da partida.
-  const [isDynamicMode, setIsDynamicMode] = useState(true);
+  // Lê o modo de jogo do localStorage (armazenado ao criar a partida).
+  // Se não estiver presente (Player B/convidado), assume Dinâmico de forma otimista:
+  // caso seja Clássico, o backend retornará erro na primeira tentativa de mover
+  // e o painel será ocultado automaticamente.
+  const [isDynamicMode, setIsDynamicMode] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const stored = localStorage.getItem(`gameMode_${match.id}`);
+    if (stored === null) return true; // Modo desconhecido (Player B) → otimisticamente Dinâmico
+    return stored === "Dynamic";
+  });
 
   const isMyTurn = match.isMyTurn;
   const isFinished = match.status === MatchStatus.FINISHED;
@@ -205,16 +212,11 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
       try {
         await moveShip.mutateAsync({ shipId: selectedShipId, direction });
         setHasMovedThisTurn(true);
+        // NÃO reseta o timer: mover não passa o turno — o tempo continua correndo
         addToast("Navio movido com sucesso!", "info", 2000);
       } catch (error: unknown) {
-        const err = error as {
-          response?: { data?: { message?: string } };
-          message?: string;
-        };
-        const msg =
-          err?.response?.data?.message ||
-          err?.message ||
-          "Erro ao mover navio.";
+        const err = error as { status?: number; message?: string };
+        const msg = err?.message || "Erro ao mover navio.";
 
         // Detecta se o backend rejeitou por não ser modo Dinâmico
         if (msg.includes("modo Dinâmico") || msg.includes("Dynamic")) {
@@ -224,6 +226,17 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
             "info",
             4000,
           );
+        } else if (err?.status === 409) {
+          // Posição de destino já foi alvejada
+          if (msg.includes("alvejada") || msg.includes("atingida")) {
+            addToast(
+              "Posição já atingida! Escolha um destino diferente.",
+              "info",
+              3000,
+            );
+          } else {
+            addToast(msg, "info", 3000);
+          }
         } else {
           addToast(msg, "info", 3000);
         }

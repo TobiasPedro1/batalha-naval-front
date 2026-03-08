@@ -10,10 +10,11 @@ export const useCreateMatchMutation = () => {
 
   return useMutation({
     mutationFn: (config: CreateMatch) => matchService.createMatch(config), // Recebe o objeto completo (mode, aiDifficulty, etc)
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["matches"] });
       if (typeof window !== "undefined") {
         localStorage.setItem("matchId", data.matchId);
+        localStorage.setItem(`gameMode_${data.matchId}`, variables.mode);
       }
     },
   });

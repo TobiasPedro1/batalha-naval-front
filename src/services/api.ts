@@ -124,12 +124,14 @@ api.interceptors.response.use(
       }
     }
     // Handle other errors
+    // Backend may return ProblemDetails (ASP.NET) with `detail` instead of `message`
     const responseData = error.response?.data as
-      | { message?: string }
+      | { message?: string; detail?: string }
       | undefined;
     const apiError: ApiError = {
       message:
         responseData?.message ||
+        responseData?.detail ||
         error.message ||
         "An unexpected error occurred",
       status: error.response?.status,

@@ -138,6 +138,9 @@ export const GameModeSelector: React.FC = () => {
   const [selectedDifficulty, setSelectedDifficulty] =
     useState<AIDifficulty>("Basic");
 
+  // PvE State — game mode
+  const [pveMode, setPveMode] = useState<GameMode>("Classic");
+
   // PvP State
   const [opponentId, setOpponentId] = useState("");
   const [pvpError, setPvpError] = useState("");
@@ -159,8 +162,8 @@ export const GameModeSelector: React.FC = () => {
     try {
       // Montamos o DTO específico para treino contra IA
       const match = await createMatch.mutateAsync({
-        mode: "Classic", // Ou 'SOLO', conforme sua API
-        aiDifficulty: selectedDifficulty, // Valor opcional que agora faz sentido
+        mode: pveMode,
+        aiDifficulty: selectedDifficulty,
       });
 
       // Redireciona usando o ID retornado
@@ -387,6 +390,48 @@ export const GameModeSelector: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Mode Selection (Classic / Dynamic) */}
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-slate-300">Modo de Jogo</p>
+            <div className="grid grid-cols-2 gap-3">
+              {gameModeOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setPveMode(option.value)}
+                  className={`
+                    relative flex flex-col p-3 rounded-2xl border-2 text-left transition-all hover:bg-slate-800/80 focus:outline-none
+                    ${
+                      pveMode === option.value
+                        ? "border-cyan-500 bg-cyan-500/10 shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] scale-[1.02] z-10"
+                        : "border-slate-800 bg-slate-900/50 hover:border-slate-700 hover:bg-slate-800/40"
+                    }
+                  `}
+                >
+                  <div className="flex items-center gap-2 mb-1 p-1">
+                    {option.value === "Classic" ? (
+                      <Anchor className="w-4 h-4 text-cyan-400" />
+                    ) : (
+                      <Ship className="w-4 h-4 text-purple-400" />
+                    )}
+                    <span
+                      className={cn(
+                        "font-bold text-sm",
+                        option.value === "Classic"
+                          ? "text-cyan-400"
+                          : "text-purple-400",
+                      )}
+                    >
+                      {option.label}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 leading-snug p-1">
+                    {option.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Difficulty Selection */}
           <div className="space-y-1">
             <p className="text-sm font-medium text-slate-300 ">
@@ -444,7 +489,7 @@ export const GameModeSelector: React.FC = () => {
             size="lg"
           >
             <Swords className="mr-2 h-5 w-5" />
-            Iniciar Treinamento
+            Iniciar Treinamento {pveMode === "Dynamic" ? "Dinâmico" : "Clássico"}
           </Button>
         </CardContent>
       </Card>

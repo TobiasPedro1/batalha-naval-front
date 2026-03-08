@@ -159,6 +159,7 @@ function adaptGameStateToEntity(
 
     isMyTurn: dto.isMyTurn,
     stats: dto.stats,
+    gameMode: dto.mode,
   };
 }
 

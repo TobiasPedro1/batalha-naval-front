@@ -399,10 +399,33 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
 
             {/* Success / waiting state */}
             {(isPlayerReady || setupMatch.isSuccess) && (
-              <div className="p-4 bg-emerald-900/30 border border-emerald-600/40 rounded-lg">
-                <p className="text-emerald-400 text-center font-bold animate-pulse">
-                  ⚓ AGUARDANDO COMANDANTE ADVERSÁRIO...
-                </p>
+              <div className="space-y-3">
+                <div className="p-4 bg-emerald-900/30 border border-emerald-600/40 rounded-lg">
+                  <p className="text-emerald-400 text-center font-bold animate-pulse">
+                    ⚓ AGUARDANDO COMANDANTE ADVERSÁRIO...
+                  </p>
+                </div>
+                {match.id && (
+                  <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-lg space-y-2">
+                    <p className="text-xs text-slate-400 text-center">
+                      Compartilhe o ID da partida com seu adversário:
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <code className="flex-1 text-xs bg-slate-900 text-cyan-300 px-3 py-2 rounded-lg font-mono break-all select-all">
+                        {match.id}
+                      </code>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(match.id);
+                        }}
+                        title="Copiar ID"
+                        className="shrink-0 p-2 rounded-lg bg-slate-700 hover:bg-cyan-700/40 text-slate-300 hover:text-cyan-300 transition-colors"
+                      >
+                        📋
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

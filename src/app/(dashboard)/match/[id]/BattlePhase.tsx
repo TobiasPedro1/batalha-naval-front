@@ -52,6 +52,7 @@ interface AdaptedMatch {
   player1Board: { cells: CellState[][]; ships: ShipDto[] };
   player2Board: { cells: CellState[][]; ships: ShipDto[] };
   stats: MatchStatsDto;
+  gameMode: "Classic" | "Dynamic";
 }
 
 interface BattlePhaseProps {
@@ -118,16 +119,11 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
   // ─── Estado do Modo Dinâmico ───────────────────────────────────────────────
   const [selectedShipId, setSelectedShipId] = useState<string | null>(null);
   const [hasMovedThisTurn, setHasMovedThisTurn] = useState(false);
-  // Lê o modo de jogo do localStorage (armazenado ao criar a partida).
-  // Se não estiver presente (Player B/convidado), assume Dinâmico de forma otimista:
-  // caso seja Clássico, o backend retornará erro na primeira tentativa de mover
-  // e o painel será ocultado automaticamente.
-  const [isDynamicMode, setIsDynamicMode] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const stored = localStorage.getItem(`gameMode_${match.id}`);
-    if (stored === null) return true; // Modo desconhecido (Player B) → otimisticamente Dinâmico
-    return stored === "Dynamic";
-  });
+  // Source of truth: mode vem diretamente da API (resolvido no backend).
+  // Tanto o Player A quanto o Player B (convidado) recebem o modo correto.
+  const isDynamicMode = match.gameMode === "Dynamic";
+  // Compatível com localStorage como cache de escrita (opcional)
+  const setIsDynamicMode = (_: boolean) => {}; // no-op: modo é imutável em runtime
 
   const isMyTurn = match.isMyTurn;
   const isFinished = match.status === MatchStatus.FINISHED;
@@ -218,15 +214,7 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
         const err = error as { status?: number; message?: string };
         const msg = err?.message || "Erro ao mover navio.";
 
-        // Detecta se o backend rejeitou por não ser modo Dinâmico
-        if (msg.includes("modo Dinâmico") || msg.includes("Dynamic")) {
-          setIsDynamicMode(false);
-          addToast(
-            "Esta partida é no modo Clássico — navios não podem ser movidos.",
-            "info",
-            4000,
-          );
-        } else if (err?.status === 409) {
+        if (err?.status === 409) {
           // Posição de destino já foi alvejada
           if (msg.includes("alvejada") || msg.includes("atingida")) {
             addToast(
@@ -289,11 +277,13 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
         // 5. Reseta o timer após tiro bem-sucedido (turno muda)
         resetTimer();
 
-        // 5b. Modo Dinâmico: acertou → pode mover de novo no próximo sub-turno
-        if (result.isHit) {
-          setHasMovedThisTurn(false);
-          setSelectedShipId(null);
-        }
+        // 5b. Modo Dinâmico: sempre reseta o movimento após qualquer tiro.
+        // Em acerto o turno continua (pode mover antes do próximo tiro).
+        // Em erro o turno troca, mas em PvE a IA responde tão rápido que
+        // isMyTurn volta true sem passar por false — o useEffect não dispara.
+        // Resetar aqui garante que o flag esteja limpo em ambos os casos.
+        setHasMovedThisTurn(false);
+        setSelectedShipId(null);
 
         // 6. Game Over — se EU atirei e o jogo acabou, EU venci.
         //    Marca a ref IMEDIATAMENTE para que o banner e o useEffect
@@ -472,7 +462,7 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
               <div className="mt-4 w-full max-w-sm bg-slate-800/70 border border-slate-700 rounded-xl p-4 space-y-3">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-bold text-purple-400">
-                    ⚡ Modo Dinâmico
+                     Modo Dinâmico
                   </span>
                   {hasMovedThisTurn && (
                     <span className="text-xs bg-green-700/40 text-green-300 px-2 py-0.5 rounded-full">

@@ -109,6 +109,7 @@ export interface MatchGameState {
   myBoard: BoardStateDto;
   opponentBoard: BoardStateDto;
   stats: MatchStatsDto;
+  mode: "Classic" | "Dynamic";
 }
 
 export interface MatchListItem {

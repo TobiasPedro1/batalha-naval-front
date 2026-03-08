@@ -31,16 +31,19 @@ import { MatchStatus } from "@/types/game-enums";
 import {
   AlertCircle,
   ArrowRight,
+  Anchor,
   Badge,
   Bot,
   Brain,
   Gamepad2,
   Globe,
+  Link2,
   Medal,
   Plus,
   Radar,
   RefreshCcw,
   Search,
+  Ship,
   Swords,
   Target,
   XCircle,
@@ -54,8 +57,19 @@ import { ApiError } from "@/services/api";
  */
 export type AIDifficulty = "Basic" | "Intermediate" | "Advanced";
 
+/**
+ * Game modes (must match backend GameMode enum)
+ */
+export type GameMode = "Classic" | "Dynamic";
+
 interface DifficultyOption {
   value: AIDifficulty;
+  label: string;
+  description: string;
+}
+
+interface GameModeOption {
+  value: GameMode;
   label: string;
   description: string;
 }
@@ -75,6 +89,19 @@ const difficultyOptions: DifficultyOption[] = [
     value: "Advanced",
     label: "Avançado",
     description: "IA com estratégia de caça otimizada.",
+  },
+];
+
+const gameModeOptions: GameModeOption[] = [
+  {
+    value: "Classic",
+    label: "Clássico",
+    description: "Navios fixos. Acertou? Joga de novo.",
+  },
+  {
+    value: "Dynamic",
+    label: "Dinâmico",
+    description: "Mova seus navios durante a batalha.",
   },
 ];
 
@@ -111,9 +138,15 @@ export const GameModeSelector: React.FC = () => {
   const [selectedDifficulty, setSelectedDifficulty] =
     useState<AIDifficulty>("Basic");
 
+  // PvE State — game mode
+  const [pveMode, setPveMode] = useState<GameMode>("Classic");
+
   // PvP State
   const [opponentId, setOpponentId] = useState("");
   const [pvpError, setPvpError] = useState("");
+  const [pvpMode, setPvpMode] = useState<GameMode>("Classic");
+  const [inviteMatchId, setInviteMatchId] = useState("");
+  const [inviteError, setInviteError] = useState("");
 
   // Campaign State
   const [campaignError, setCampaignError] = useState("");
@@ -129,8 +162,8 @@ export const GameModeSelector: React.FC = () => {
     try {
       // Montamos o DTO específico para treino contra IA
       const match = await createMatch.mutateAsync({
-        mode: "Classic", // Ou 'SOLO', conforme sua API
-        aiDifficulty: selectedDifficulty, // Valor opcional que agora faz sentido
+        mode: pveMode,
+        aiDifficulty: selectedDifficulty,
       });
 
       // Redireciona usando o ID retornado
@@ -175,7 +208,7 @@ export const GameModeSelector: React.FC = () => {
   };
 
   /**
-   * Handle PvP challenge
+   * Handle PvP match creation with opponent ID
    */
   const handleChallenge = async () => {
     if (!opponentId.trim()) {
@@ -186,13 +219,32 @@ export const GameModeSelector: React.FC = () => {
     setPvpError("");
 
     try {
-      // Try to join an existing match or create a challenge
-      const match = await joinMatch.mutateAsync(opponentId.trim());
-      router.push(`/match/${match.id}`);
+      const match = await createMatch.mutateAsync({
+        mode: pvpMode,
+        opponentId: opponentId.trim(),
+      });
+      router.push(`/match/${match.matchId}`);
     } catch (error) {
-      console.error("Erro ao desafiar oponente:", error);
-      setPvpError("Não foi possível encontrar o oponente");
+      console.error("Erro ao criar partida PvP:", error);
+      setPvpError(
+        "Não foi possível criar a partida. Verifique o ID do oponente.",
+      );
     }
+  };
+
+  /**
+   * Handle accepting a PvP invite by entering the match ID
+   */
+  const handleAcceptInvite = () => {
+    const trimmed = inviteMatchId.trim();
+    if (!trimmed) {
+      setInviteError("Digite o ID da partida");
+      return;
+    }
+    setInviteError("");
+    // Salva no localStorage para o useSetupMatchMutation conseguir ler
+    localStorage.setItem("matchId", trimmed);
+    router.push(`/match/${trimmed}`);
   };
 
   /**
@@ -272,7 +324,7 @@ export const GameModeSelector: React.FC = () => {
         </div>
         <CardHeader className="pb-1">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-yellow-500 pb-0">
+            <CardTitle className="flex items-center gap-2 text-cyan-500 pb-0">
               <Medal className="w-6 h-6" />
               Modo Campanha
             </CardTitle>
@@ -311,7 +363,7 @@ export const GameModeSelector: React.FC = () => {
               "w-full rounded-2xl text-white font-bold h-12 transition-all",
               isCampaignCompleted
                 ? "bg-slate-800 opacity-50 cursor-not-allowed"
-                : "bg-gradient-to-r from-yellow-600 to-amber-700 hover:scale-[1.01] active:scale-[0.99] shadow-[0_0_20px_rgba(217,119,6,0.3)]",
+                : "w-full rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-800 hover: text-white font-bold h-12 shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all hover:scale-[1.01] active:scale-[0.99]",
             )}
             size="lg"
           >
@@ -338,6 +390,48 @@ export const GameModeSelector: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Mode Selection (Classic / Dynamic) */}
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-slate-300">Modo de Jogo</p>
+            <div className="grid grid-cols-2 gap-3">
+              {gameModeOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setPveMode(option.value)}
+                  className={`
+                    relative flex flex-col p-3 rounded-2xl border-2 text-left transition-all hover:bg-slate-800/80 focus:outline-none
+                    ${
+                      pveMode === option.value
+                        ? "border-cyan-500 bg-cyan-500/10 shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] scale-[1.02] z-10"
+                        : "border-slate-800 bg-slate-900/50 hover:border-slate-700 hover:bg-slate-800/40"
+                    }
+                  `}
+                >
+                  <div className="flex items-center gap-2 mb-1 p-1">
+                    {option.value === "Classic" ? (
+                      <Anchor className="w-4 h-4 text-cyan-400" />
+                    ) : (
+                      <Ship className="w-4 h-4 text-purple-400" />
+                    )}
+                    <span
+                      className={cn(
+                        "font-bold text-sm",
+                        option.value === "Classic"
+                          ? "text-cyan-400"
+                          : "text-purple-400",
+                      )}
+                    >
+                      {option.label}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 leading-snug p-1">
+                    {option.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Difficulty Selection */}
           <div className="space-y-1">
             <p className="text-sm font-medium text-slate-300 ">
@@ -395,7 +489,7 @@ export const GameModeSelector: React.FC = () => {
             size="lg"
           >
             <Swords className="mr-2 h-5 w-5" />
-            Iniciar Treinamento
+            Iniciar Treinamento {pveMode === "Dynamic" ? "Dinâmico" : "Clássico"}
           </Button>
         </CardContent>
       </Card>
@@ -419,14 +513,57 @@ export const GameModeSelector: React.FC = () => {
         </CardHeader>
 
         <CardContent className="space-y-6">
+          {/* Mode Selection (Classic / Dynamic) */}
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-slate-300">Modo de Jogo</p>
+            <div className="grid grid-cols-2 gap-3">
+              {gameModeOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setPvpMode(option.value)}
+                  className={`
+                    relative flex flex-col p-3 rounded-2xl border-2 text-left transition-all hover:bg-slate-800/80 focus:outline-none
+                    ${
+                      pvpMode === option.value
+                        ? "border-cyan-500 bg-cyan-500/10 shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] scale-[1.02] z-10"
+                        : "border-slate-800 bg-slate-900/50 hover:border-slate-700 hover:bg-slate-800/40"
+                    }
+                  `}
+                >
+                  <div className="flex items-center gap-2 mb-1 p-1">
+                    {option.value === "Classic" ? (
+                      <Anchor className="w-4 h-4 text-cyan-400" />
+                    ) : (
+                      <Ship className="w-4 h-4 text-purple-400" />
+                    )}
+                    <span
+                      className={cn(
+                        "font-bold text-sm",
+                        option.value === "Classic"
+                          ? "text-cyan-400"
+                          : "text-purple-400",
+                      )}
+                    >
+                      {option.label}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 leading-snug p-1">
+                    {option.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Create Match — Opponent ID */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300">
-              ID da Partida ou Oponente
+              ID do Oponente
             </label>
             <div className="flex gap-2">
               <Input
                 type="text"
-                placeholder="Digite o ID da partida para entrar..."
+                placeholder="Cole o ID (GUID) do oponente para desafiar..."
                 value={opponentId}
                 onChange={(e) => {
                   setOpponentId(e.target.value);
@@ -436,36 +573,68 @@ export const GameModeSelector: React.FC = () => {
                 errorMessage={pvpError}
               />
             </div>
+          </div>
+
+          <Button
+            className="w-full rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-800 text-white font-bold h-12 shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all hover:scale-[1.01] active:scale-[0.99]"
+            onClick={handleChallenge}
+            isLoading={createMatch.isPending}
+            disabled={!opponentId.trim()}
+            size="lg"
+          >
+            <Swords className="mr-2 h-5 w-5" />
+            Criar Partida {pvpMode === "Dynamic" ? "Dinâmica" : "Clássica"}
+          </Button>
+
+          {/* Separator */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-700" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-slate-900 px-3 text-xs text-slate-500 uppercase tracking-wider">
+                Ou foi convidado?
+              </span>
+            </div>
+          </div>
+
+          {/* Accept Invite — Match ID */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-300 flex items-center gap-1.5">
+              <Link2 className="w-3.5 h-3.5" />
+              Aceitar Convite
+            </label>
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="Cole o ID da partida recebido..."
+                value={inviteMatchId}
+                onChange={(e) => {
+                  setInviteMatchId(e.target.value);
+                  setInviteError("");
+                }}
+                error={!!inviteError}
+                errorMessage={inviteError}
+              />
+            </div>
             <p className="text-xs text-slate-500">
-              Ou crie uma nova partida e compartilhe o ID com seu oponente
+              Recebeu um convite? Cole o ID da partida aqui para entrar e
+              posicionar sua frota.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Button
-              className="w-full rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-800 hover: text-white font-bold h-12 shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all hover:scale-[1.01] active:scale-[0.99]"
-              onClick={handleChallenge}
-              isLoading={joinMatch.isPending}
-              disabled={!opponentId.trim()}
-              size="lg"
-            >
-              <Gamepad2 className="mr-2 h-6 w-6 text-white" />
-              <p className="text-white">Entrar na Partida</p>
-            </Button>
-            <Button
-              onClick={handleStartTraining}
-              isLoading={createMatch.isPending}
-              size="lg"
-              className="w-full rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-800 hover: text-white font-bold h-12 shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all hover:scale-[1.01] active:scale-[0.99]"
-            >
-              {" "}
-              <Plus className="mr-2 h-5 w-5" />
-              Criar Partida
-            </Button>
-          </div>
+          <Button
+            className="w-full rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold h-12 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all hover:scale-[1.01] active:scale-[0.99]"
+            onClick={handleAcceptInvite}
+            disabled={!inviteMatchId.trim()}
+            size="lg"
+          >
+            <Gamepad2 className="mr-2 h-5 w-5" />
+            Entrar na Partida
+          </Button>
         </CardContent>
       </Card>
-      <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm min-h-[300px] flex flex-col">
+      {/*<Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm min-h-[300px] flex flex-col">
         <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
           <Radar className="w-64 h-64" />
         </div>
@@ -562,7 +731,7 @@ export const GameModeSelector: React.FC = () => {
             </div>
           )}
         </CardContent>
-      </Card>
+      </Card>*/}
       {alreadyMatch.inMatch && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">

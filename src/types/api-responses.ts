@@ -5,6 +5,7 @@ export interface UserProfile {
   rankPoints: number;
   wins: number;
   losses: number;
+  earnedMedalCodes: string[];
 }
 export interface AuthResponse {
   accessToken: string;
@@ -108,6 +109,7 @@ export interface MatchGameState {
   myBoard: BoardStateDto;
   opponentBoard: BoardStateDto;
   stats: MatchStatsDto;
+  mode: "Classic" | "Dynamic";
 }
 
 export interface MatchListItem {

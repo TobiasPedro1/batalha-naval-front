@@ -298,7 +298,7 @@ export default function ProfilePage() {
       </Card>
 
       {/* Medals Showcase */}
-      <Card className="bg-slate-900/50 border-slate-800 rounded-2xl overflow-hidden">
+      <Card className="bg-slate-900/50 border-slate-800 rounded-2xl">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>

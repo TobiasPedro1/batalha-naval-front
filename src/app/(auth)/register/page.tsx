@@ -1,9 +1,3 @@
-/**
- * Register Page - Naval Design System
- *
- * User registration interface with form validation using react-hook-form + Zod.
- * Follows flat/deep naval aesthetic with 100% visual consistency with Login page.
- */
 "use client";
 
 import React, { useState } from "react";
@@ -11,16 +5,10 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Anchor, Lock, User, Eye, EyeOff } from "lucide-react";
 
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/Card";
 import { useAuth } from "@/providers/AuthProvider";
 // ============================================================================
 // Validation Schema
@@ -52,58 +40,13 @@ const registerSchema = z
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 // ============================================================================
-// Alert Component (reused from Login)
-// ============================================================================
-
-interface AlertProps {
-  type: "error" | "success";
-  message: string;
-  onClose?: () => void;
-}
-
-const Alert: React.FC<AlertProps> = ({ type, message, onClose }) => {
-  const styles = {
-    error: "bg-naval-error/10 border-naval-error text-naval-error",
-    success: "bg-green-500/10 border-green-500 text-green-400",
-  };
-
-  return (
-    <div
-      className={`flex items-center justify-between px-4 py-3 rounded-md border ${styles[type]}`}
-      role="alert"
-    >
-      <span className="text-sm">{message}</span>
-      {onClose && (
-        <button
-          onClick={onClose}
-          className="ml-4 text-current hover:opacity-70 transition-opacity"
-          aria-label="Fechar alerta"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      )}
-    </div>
-  );
-};
-
-// ============================================================================
 // Register Page Component
 // ============================================================================
 
 export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register: authRegister } = useAuth();
   const {
     register,
@@ -111,9 +54,10 @@ export default function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
     defaultValues: {
       username: "",
-      // email: '',
       password: "",
       confirmPassword: "",
     },
@@ -121,11 +65,9 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterFormData) => {
     setError(null);
-
     try {
       await authRegister({
         username: data.username,
-        //email: data.email,
         password: data.password,
       });
     } catch (err: any) {
@@ -136,123 +78,192 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-naval-bg p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 text-5xl">⚓</div>
-          <CardTitle>Batalha Naval</CardTitle>
-          <CardDescription className="mt-2">
-            Crie sua conta para entrar no jogo
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* Error Alert */}
-            {error && (
-              <Alert
-                type="error"
-                message={error}
-                onClose={() => setError(null)}
-              />
-            )}
-
-            {/* Username Field */}
-            <div className="space-y-2">
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-white"
-              >
-                Nome de usuário
-              </label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="jogador123"
-                autoComplete="username"
-                error={!!errors.username}
-                errorMessage={errors.username?.message}
-                {...register("username")}
-              />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
+      <div className="relative w-full max-w-md">
+        <div className="relative backdrop-blur-xl bg-slate-900/40 border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="p-8 space-y-6">
+            <div className="text-center space-y-4">
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full"></div>
+                  <div className="relative bg-slate-800/50 p-4 rounded-2xl border border-cyan-400/30">
+                    <Anchor className="h-12 w-12 text-cyan-400" />
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-lg">
+                  Batalha Naval
+                </h1>
+                <p className="text-slate-400 text-sm">
+                  Crie sua conta para entrar no jogo
+                </p>
+              </div>
             </div>
 
-            {/* Email Field 
-            <div className="space-y-2">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-white"
-              >
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                autoComplete="email"
-                error={!!errors.email}
-                errorMessage={errors.email?.message}
-                {...register('email')}
-              />
-            </div>
-              */}
-            {/* Password Field */}
-            <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-white"
-              >
-                Senha
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                autoComplete="new-password"
-                error={!!errors.password}
-                errorMessage={errors.password?.message}
-                {...register("password")}
-              />
-            </div>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {error && (
+                <div
+                  className="flex items-center justify-between px-4 py-3 rounded-md border bg-red-500/10 border-red-500 text-red-400"
+                  role="alert"
+                >
+                  <span className="text-sm">{error}</span>
+                  <button
+                    type="button"
+                    onClick={() => setError(null)}
+                    className="ml-4 text-current hover:opacity-70 transition-opacity"
+                    aria-label="Fechar alerta"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              )}
 
-            {/* Confirm Password Field */}
-            <div className="space-y-2">
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-white"
+              <div className="space-y-2">
+                <label
+                  htmlFor="username"
+                  className="block text-slate-300 text-sm font-medium"
+                >
+                  Nome de usuário
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="jogador123"
+                    autoComplete="username"
+                    error={!!errors.username}
+                    className="pl-10 bg-slate-800/50 border-slate-700 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-cyan-400/30"
+                    {...register("username")}
+                  />
+                </div>
+                {errors.username && (
+                  <p className="text-sm text-red-400">
+                    {errors.username.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="block text-slate-300 text-sm font-medium"
+                >
+                  Senha
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    error={!!errors.password}
+                    className="pl-10 pr-10 bg-slate-800/50 border-slate-700 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-cyan-400/30"
+                    {...register("password")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors"
+                    aria-label={
+                      showPassword ? "Ocultar senha" : "Mostrar senha"
+                    }
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-sm text-red-400">
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-slate-300 text-sm font-medium"
+                >
+                  Confirmar senha
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    error={!!errors.confirmPassword}
+                    className="pl-10 pr-10 bg-slate-800/50 border-slate-700 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-cyan-400/30"
+                    {...register("confirmPassword")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors"
+                    aria-label={
+                      showConfirmPassword ? "Ocultar senha" : "Mostrar senha"
+                    }
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-sm text-red-400">
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                isLoading={isSubmitting}
+                className="w-full h-11 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-white font-semibold shadow-lg shadow-cyan-500/30 border-0 transition-all duration-200 hover:shadow-cyan-500/40 hover:shadow-xl"
               >
-                Confirmar senha
-              </label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                autoComplete="new-password"
-                error={!!errors.confirmPassword}
-                errorMessage={errors.confirmPassword?.message}
-                {...register("confirmPassword")}
-              />
+                {isSubmitting ? "Criando conta..." : "Criar conta"}
+              </Button>
+            </form>
+
+            <div className="text-center pt-4 border-t border-slate-800">
+              <p className="text-sm text-slate-400">
+                Já tem uma conta?{" "}
+                <Link
+                  href="/login"
+                  className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                >
+                  Faça login
+                </Link>
+              </p>
             </div>
-
-            {/* Submit Button */}
-            <Button type="submit" className="w-full" isLoading={isSubmitting}>
-              {isSubmitting ? "Criando conta..." : "Criar conta"}
-            </Button>
-          </form>
-
-          {/* Login Link */}
-          <div className="mt-6 text-center text-sm">
-            <span className="text-naval-text-secondary">
-              Já tem uma conta?{" "}
-            </span>
-            <Link
-              href="/login"
-              className="text-naval-action hover:underline font-medium transition-colors"
-            >
-              Faça login
-            </Link>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="h-1 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+        </div>
+
+        <div className="mt-6 text-center"></div>
+      </div>
     </div>
   );
 }

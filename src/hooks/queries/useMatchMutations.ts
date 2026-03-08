@@ -3,16 +3,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { matchService } from "@/services/matchService";
 import { SetupShipPayload, ShootPayload, Match } from "@/types/api-responses";
 import { CreateMatch } from "@/types/api-requests";
+import { MoveDirection } from "@/types/game-enums";
 
 export const useCreateMatchMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (config: CreateMatch) => matchService.createMatch(config), // Recebe o objeto completo (mode, aiDifficulty, etc)
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["matches"] });
       if (typeof window !== "undefined") {
         localStorage.setItem("matchId", data.matchId);
+        localStorage.setItem(`gameMode_${data.matchId}`, variables.mode);
       }
     },
   });
@@ -95,6 +97,22 @@ export const useForfeitMutation = (matchId: string) => {
       queryClient.invalidateQueries({ queryKey: ["match", matchId] });
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
       queryClient.invalidateQueries({ queryKey: ["leaderBoard"] });
+    },
+  });
+};
+
+export const useMoveShipMutation = (matchId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: { shipId: string; direction: MoveDirection }) =>
+      matchService.moveShip({
+        matchId,
+        shipId: input.shipId,
+        direction: input.direction,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["match", matchId] });
     },
   });
 };

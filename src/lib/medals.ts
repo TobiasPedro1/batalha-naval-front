@@ -1,151 +1,54 @@
 /**
  * Medal System Configuration
- *
- * Defines all available medals and their unlock criteria.
+ * Synchronized with the Backend Database Codes
  */
 import { Medal } from "@/components/profile/MedalBadge";
 import { UserDetails } from "@/types/api-responses";
 
 /**
- * Medal definitions with unlock criteria
+ * Static definitions of the 4 valid Backend Medals
  */
 export const MEDAL_DEFINITIONS = [
   {
-    id: "first-win",
-    name: "Primeira Vitória",
-    description: "Vença sua primeira batalha naval",
-    icon: "🏆",
-    requirement: "Vencer 1 partida",
-    checkUnlocked: (user: UserDetails) => user.wins >= 1,
-    getProgress: (user: UserDetails) => ({ current: user.wins, max: 1 }),
+    id: "SAILOR", // DEVE SER EXATAMENTE O CODE DO BANCO DE DADOS
+    name: "Marinheiro",
+    description: "Vença uma partida de forma rápida e eficiente.",
+    icon: "⏱️",
+    requirement: "Vencer a partida em menos de 2 minutos",
   },
   {
-    id: "veteran",
-    name: "Veterano",
-    description: "Participe de 10 batalhas",
-    icon: "🎮",
-    requirement: "Jogar 10 partidas",
-    checkUnlocked: (user: UserDetails) => user.gamesPlayed >= 10,
-    getProgress: (user: UserDetails) => ({
-      current: user.gamesPlayed,
-      max: 10,
-    }),
-  },
-  {
-    id: "five-wins",
-    name: "Comandante",
-    description: "Alcance 5 vitórias",
-    icon: "⭐",
-    requirement: "Vencer 5 partidas",
-    checkUnlocked: (user: UserDetails) => user.wins >= 5,
-    getProgress: (user: UserDetails) => ({ current: user.wins, max: 5 }),
-  },
-  {
-    id: "ten-wins",
-    name: "Capitão de Mar e Guerra",
-    description: "Conquiste 10 vitórias",
-    icon: "💎",
-    requirement: "Vencer 10 partidas",
-    checkUnlocked: (user: UserDetails) => user.wins >= 10,
-    getProgress: (user: UserDetails) => ({ current: user.wins, max: 10 }),
-  },
-  {
-    id: "champion",
-    name: "Almirante",
-    description: "Vença 25 batalhas e prove sua superioridade",
-    icon: "👑",
-    requirement: "Vencer 25 partidas",
-    checkUnlocked: (user: UserDetails) => user.wins >= 25,
-    getProgress: (user: UserDetails) => ({ current: user.wins, max: 25 }),
-  },
-  {
-    id: "legend",
-    name: "Lenda dos Mares",
-    description: "Alcance o ápice com 50 vitórias",
-    icon: "🌟",
-    requirement: "Vencer 50 partidas",
-    checkUnlocked: (user: UserDetails) => user.wins >= 50,
-    getProgress: (user: UserDetails) => ({ current: user.wins, max: 50 }),
-  },
-  {
-    id: "perfect-record",
-    name: "Invencível",
-    description: "Mantenha 100% de vitórias com pelo menos 5 jogos",
-    icon: "🛡️",
-    requirement: "5+ jogos sem derrotas",
-    checkUnlocked: (user: UserDetails) =>
-      user.gamesPlayed >= 5 && user.losses === 0,
-    getProgress: (user: UserDetails) => ({
-      current: user.losses === 0 ? user.gamesPlayed : 0,
-      max: 5,
-    }),
-  },
-  {
-    id: "persistent",
-    name: "Persistente",
-    description: "Continue lutando mesmo após 10 derrotas",
-    icon: "💪",
-    requirement: "Sofrer 10 derrotas",
-    checkUnlocked: (user: UserDetails) => user.losses >= 10,
-    getProgress: (user: UserDetails) => ({ current: user.losses, max: 10 }),
-  },
-  {
-    id: "high-win-rate",
-    name: "Estrategista",
-    description: "Mantenha uma taxa de vitória acima de 70% com 10+ jogos",
-    icon: "🧠",
-    requirement: "70%+ de vitórias (mín. 10 jogos)",
-    checkUnlocked: (user: UserDetails) => {
-      if (user.gamesPlayed < 10) return false;
-      return user.wins / user.gamesPlayed >= 0.7;
-    },
-    getProgress: (user: UserDetails) => ({
-      current: Math.min(user.gamesPlayed, 10),
-      max: 10,
-    }),
-  },
-  {
-    id: "centurion",
-    name: "Centurião",
-    description: "Participe de 100 batalhas épicas",
-    icon: "🎖️",
-    requirement: "Jogar 100 partidas",
-    checkUnlocked: (user: UserDetails) => user.gamesPlayed >= 100,
-    getProgress: (user: UserDetails) => ({
-      current: user.gamesPlayed,
-      max: 100,
-    }),
-  },
-  {
-    id: "comeback-king",
-    name: "Rei do Comeback",
-    description: "Vença após ter perdido os 3 primeiros navios",
-    icon: "🔥",
-    requirement: "Vencer uma partida difícil",
-    checkUnlocked: () => false, // Requires match-specific data
-    getProgress: () => ({ current: 0, max: 1 }),
-  },
-  {
-    id: "sharpshooter",
-    name: "Atirador de Elite",
-    description: "Vença com 80%+ de acertos",
+    id: "CAPTAIN",
+    name: "Capitão",
+    description: "Demonstre grande precisão na batalha.",
     icon: "🎯",
-    requirement: "Taxa de acerto de 80% em uma vitória",
-    checkUnlocked: () => false, // Requires match-specific data
-    getProgress: () => ({ current: 0, max: 1 }),
+    requirement: "Acertar 7 tiros seguidos na mesma partida",
+  },
+  {
+    id: "CAPTAIN_WAR",
+    name: "Capitão de Mar e Guerra",
+    description: "Uma precisão impecável e letal.",
+    icon: "⚔️",
+    requirement: "Acertar 8 tiros seguidos na mesma partida",
+  },
+  {
+    id: "ADMIRAL",
+    name: "Almirante",
+    description: "Uma tática de defesa impenetrável.",
+    icon: "👑",
+    requirement: "Vencer sem perder nenhum navio da sua frota",
   },
 ];
 
 /**
- * Generate medal instances for a user
- *
- * @param user - User profile data
- * @returns Array of medals with unlocked states
+ * Generate medal instances for a user based on Backend response
  */
 export const getUserMedals = (user: UserDetails): Medal[] => {
+  // Pega a lista de IDs de medalhas retornadas do Back-end.
+  // Usa fallback para array vazio caso ainda não tenha carregado.
+  const earnedCodes = user.earnedMedalCodes || [];
+
   return MEDAL_DEFINITIONS.map((def) => {
-    const unlocked = def.checkUnlocked(user);
-    const progress = def.getProgress(user);
+    const unlocked = earnedCodes.includes(def.id);
 
     return {
       id: def.id,
@@ -154,17 +57,12 @@ export const getUserMedals = (user: UserDetails): Medal[] => {
       icon: def.icon,
       requirement: def.requirement,
       unlocked,
-      progress: progress.current,
-      maxProgress: progress.max,
     };
   });
 };
 
 /**
  * Calculate total unlocked medals
- *
- * @param medals - Array of medals
- * @returns Number of unlocked medals
  */
 export const getUnlockedMedalCount = (medals: Medal[]): number => {
   return medals.filter((m) => m.unlocked).length;
@@ -172,9 +70,6 @@ export const getUnlockedMedalCount = (medals: Medal[]): number => {
 
 /**
  * Get medals sorted by unlock status (unlocked first)
- *
- * @param medals - Array of medals
- * @returns Sorted array with unlocked medals first
  */
 export const sortMedalsByStatus = (medals: Medal[]): Medal[] => {
   return [...medals].sort((a, b) => {

@@ -34,3 +34,9 @@ export interface SetupMatchRequest {
   matchId: string;
   ships: SetupShipPayload[];
 }
+
+export interface MoveShipRequest {
+  matchId: string;
+  shipId: string;
+  direction: string;
+}

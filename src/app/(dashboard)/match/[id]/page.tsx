@@ -2,12 +2,12 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import SetupPhase from "./SetupPhase";
 import BattlePhase from "./BattlePhase";
 import { useMatchQuery } from "@/hooks/queries/useMatchQuery";
 import { useRouter, useParams } from "next/navigation";
 import { MatchGameState } from "@/types/api-responses";
 import { MatchStatus, CellState } from "@/types/game-enums";
+import SetupPhase from "./SetupPhase";
 
 export default function MatchPage() {
   const params = useParams();
@@ -21,6 +21,15 @@ export default function MatchPage() {
       : typeof window !== "undefined"
         ? localStorage.getItem("matchId")
         : null;
+
+  // Sincroniza o matchId da URL com o localStorage.
+  // Essencial para Player B (convidado): ele chega via URL, mas o
+  // useSetupMatchMutation lê o matchId do localStorage.
+  useEffect(() => {
+    if (matchId && typeof window !== "undefined") {
+      localStorage.setItem("matchId", matchId);
+    }
+  }, [matchId]);
 
   // Busca o estado REAL do servidor
   const { data: gameState, isLoading, error } = useMatchQuery(matchId || "");
@@ -150,6 +159,7 @@ function adaptGameStateToEntity(
 
     isMyTurn: dto.isMyTurn,
     stats: dto.stats,
+    gameMode: dto.mode,
   };
 }
 

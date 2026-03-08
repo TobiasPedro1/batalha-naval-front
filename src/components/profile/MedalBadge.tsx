@@ -37,7 +37,7 @@ const Tooltip: React.FC<TooltipProps> = ({ medal, visible }) => {
   if (!visible) return null;
 
   return (
-    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none">
+    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 z-[999] pointer-events-none">
       <div className="bg-naval-surface border border-naval-action/50 rounded-md shadow-xl p-3 min-w-[200px] max-w-[280px]">
         {/* Header */}
         <div className="flex items-center gap-2 mb-2">

@@ -21,6 +21,8 @@ export const useStartCampaignMutation = () => {
 
       if (typeof window !== "undefined") {
         localStorage.setItem("matchId", data.matchId);
+        // Campanha usa sempre modo Clássico — armazena para evitar exibir painel Dinâmico
+        localStorage.setItem(`gameMode_${data.matchId}`, "Classic");
       }
     },
     onError: (error: ApiError) => {

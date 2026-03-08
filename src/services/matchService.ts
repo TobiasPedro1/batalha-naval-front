@@ -1,5 +1,9 @@
 // Serviço de partidas (matches)
-import { CreateMatch, SetupMatchRequest } from "@/types/api-requests";
+import {
+  CreateMatch,
+  SetupMatchRequest,
+  MoveShipRequest,
+} from "@/types/api-requests";
 import api from "./api";
 import {
   Match,
@@ -96,6 +100,15 @@ export const matchService = {
   // Se InProgress: conta como derrota para quem desistiu. Retorna 204.
   async forfeit(matchId: string): Promise<void> {
     await api.post(`/match/${matchId}/cancel`);
+  },
+
+  // Mover navio (modo Dinâmico)
+  async moveShip(request: MoveShipRequest): Promise<{ message: string }> {
+    const { data } = await api.post<{ message: string }>(
+      "/match/move",
+      request,
+    );
+    return data;
   },
 
   // Verificar timeout de turno

@@ -123,7 +123,9 @@ export default function LoginPage() {
                   />
                 </div>
                 {errors.username && (
-                  <p className="text-sm text-red-400">{errors.username.message}</p>
+                  <p className="text-sm text-red-400">
+                    {errors.username.message}
+                  </p>
                 )}
               </div>
 
@@ -149,7 +151,9 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors"
-                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                    aria-label={
+                      showPassword ? "Ocultar senha" : "Mostrar senha"
+                    }
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -159,7 +163,9 @@ export default function LoginPage() {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-400">{errors.password.message}</p>
+                  <p className="text-sm text-red-400">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
 

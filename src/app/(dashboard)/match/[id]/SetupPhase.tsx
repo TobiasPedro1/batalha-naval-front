@@ -23,6 +23,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 
+import { Anchor } from "lucide-react";
 import { Match, SetupShipPayload } from "@/types/api-responses";
 import { CELL_SIZE, FLEET_CONFIG, GRID_SIZE } from "@/lib/game-rules";
 import {
@@ -56,6 +57,11 @@ function findShip(
   return available.find((s) => s.id === id) ?? placed.find((s) => s.id === id);
 }
 
+// ─── Constants ──────────────────────────────────────────────────────────────
+
+/** Natural px size of SetupGrid (cells + header labels). */
+const GRID_NATURAL = GRID_SIZE * CELL_SIZE + 28;
+
 // ─── Props ───────────────────────────────────────────────────────────────────
 
 interface SetupPhaseProps {
@@ -84,8 +90,6 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   /** Id of the currently "selected" ship (for click-to-place & rotation). */
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  /** Feedback for copy-to-clipboard. */
-  const [copied, setCopied] = useState(false);
 
   /** The ship object corresponding to `activeId`. */
   const activeShip = activeId
@@ -185,6 +189,20 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
     return () => clearTimeout(t);
   }, [errorMsg]);
 
+  // ── Grid scaling ─────────────────────────────────────────────────────────
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [gridScale, setGridScale] = useState(1);
+
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setGridScale(entry.contentRect.width / GRID_NATURAL);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   // ── Confirm / submit fleet ───────────────────────────────────────────────
   /**
    * Maps `PlacedShip[]` → `SetupShipPayload[]` and sends to the backend.
@@ -234,204 +252,81 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 p-8">
-        <div className="max-w-7xl mx-auto">
-          {/* ── Header ───────────────────────────────────────────────── */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">
-              Posicione Sua Frota
-            </h1>
-            <p className="text-gray-300">
-              Arraste os navios para o tabuleiro ou clique para posicionar.
-              Pressione{" "}
-              <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-xs font-mono">
-                R
-              </kbd>{" "}
-              para girar.
-            </p>
-            {match.player2 && (
-              <div className="mt-4 p-2 bg-black/30 inline-block rounded-lg border border-white/10">
-                <span className="text-yellow-400 font-mono">ADVERSÁRIO:</span>
-                <span className="text-white ml-2">
-                  {match.player2.username}
-                </span>
-                {match.player2.isReady && (
-                  <span className="text-green-400 ml-2">✓ PRONTO</span>
-                )}
-              </div>
-            )}
-          </div>
+      <div className="flex flex-col items-center justify-center min-h-[80vh] w-full max-w-6xl mx-auto gap-8 p-4 animate-in fade-in duration-500">
+        {/* ── Header ───────────────────────────────────────────────── */}
+        <div className="text-center space-y-2">
+          <h2 className="text-3xl font-bold text-white tracking-tight">
+            Posicione Sua Frota
+          </h2>
+          <p className="text-slate-400">
+            Arraste os navios para o tabuleiro ou clique para posicionar.
+            Pressione{" "}
+            <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-xs font-mono">
+              R
+            </kbd>{" "}
+            para girar.
+          </p>
+          {match.player2 && (
+            <div className="mt-4 p-2 bg-black/30 inline-block rounded-lg border border-white/10">
+              <span className="text-yellow-400 font-mono">ADVERSÁRIO:</span>
+              <span className="text-white ml-2">{match.player2.username}</span>
+              {match.player2.isReady && (
+                <span className="text-green-400 ml-2">✓ PRONTO</span>
+              )}
+            </div>
+          )}
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* ── Dock (left sidebar) ───────────────────────────────── */}
-            <div className="lg:col-span-1">
-              <div className="rounded-xl border border-naval-border bg-naval-surface/80 p-6">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-naval-text-secondary mb-4">
-                  Porto de Guerra
-                </h2>
-
-                {availableShips.length === 0 && (
-                  <p className="text-xs text-naval-text-muted italic mb-4">
-                    Todos os navios foram posicionados.
-                  </p>
-                )}
-
-                <div className="flex flex-col gap-4 mb-6">
-                  {availableShips.map((ship) => {
-                    const config = FLEET_CONFIG[ship.type];
-                    const isSelected = ship.id === selectedId;
-
-                    return (
-                      <div
-                        key={ship.id}
-                        onClick={() =>
-                          setSelectedId((prev) =>
-                            prev === ship.id ? null : ship.id,
-                          )
-                        }
-                        className={
-                          "flex flex-col items-start gap-1 rounded-lg p-3 transition-colors cursor-pointer " +
-                          (isSelected
-                            ? "ring-2 ring-naval-action bg-naval-action/10"
-                            : "bg-naval-bg/40 hover:bg-naval-action/10")
-                        }
-                      >
-                        <span className="text-xs font-semibold text-naval-text-primary">
-                          {config.label}
-                          <span className="ml-1.5 text-naval-text-muted font-normal">
-                            ({config.size} casas)
-                          </span>
-                        </span>
-
-                        <DraggableShip
-                          shipId={ship.id}
-                          type={ship.type}
-                          size={ship.size}
-                          orientation={ship.orientation}
-                          disabled={
-                            !!isPlayerReady ||
-                            isDeploying ||
-                            setupMatch.isSuccess
-                          }
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* ── Controls ───────────────────────────────────────── */}
-                <div className="pt-4 border-t border-naval-border space-y-3">
-                  {/* Rotate */}
-                  <Button
-                    onClick={() => {
-                      if (selectedId) rotateShip(selectedId);
-                    }}
-                    variant="outline"
-                    className="w-full"
-                    disabled={!selectedId || isDeploying}
-                  >
-                    🔄 Girar Navio
-                  </Button>
-
-                  {/* Confirm / Deploy */}
-                  <Button
-                    onClick={handleConfirm}
-                    variant="default"
-                    className="w-full"
-                    disabled={!canConfirm}
-                    isLoading={isDeploying}
-                  >
-                    {isDeploying ? "Enviando Frota..." : "✓ Zarpar Frota"}
-                  </Button>
-
-                  {/* Reset */}
-                  <Button
-                    onClick={resetFleet}
-                    variant="outline"
-                    className="w-full text-red-500 hover:bg-red-50/10"
-                    disabled={!!isPlayerReady || isDeploying}
-                  >
-                    Reiniciar Tabuleiro
-                  </Button>
-                </div>
-
-                {/* Error toast */}
-                {errorMsg && (
-                  <div className="mt-4 p-3 bg-red-900/40 border border-red-500/50 rounded-lg animate-in fade-in">
-                    <p className="text-red-300 text-sm text-center">
-                      ⚠ {errorMsg}
-                    </p>
-                  </div>
-                )}
-
-                {/* Success / waiting state */}
-                {(isPlayerReady || setupMatch.isSuccess) && (
-                  <div className="mt-6 p-4 bg-green-900/30 border border-green-600/40 rounded-lg space-y-4">
-                    <p className="text-green-400 text-center font-bold animate-pulse">
-                      ⚓ AGUARDANDO COMANDANTE ADVERSÁRIO...
-                    </p>
-
-                    <div className="space-y-2">
-                      <p className="text-xs text-gray-400 text-center">
-                        Envie este ID para o seu oponente aceitar o convite:
-                      </p>
-                      <div className="flex items-center gap-2 justify-center">
-                        <code className="text-sm bg-black/50 text-cyan-300 px-4 py-2 rounded-lg font-mono select-all break-all border border-cyan-800/30">
-                          {match.id}
-                        </code>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(match.id);
-                            setCopied(true);
-                            setTimeout(() => setCopied(false), 2000);
-                          }}
-                          className="text-xs bg-cyan-700/30 hover:bg-cyan-700/50 text-cyan-300 px-3 py-2 rounded-lg transition-colors whitespace-nowrap"
-                          title="Copiar ID da partida"
-                        >
-                          {copied ? "✓ Copiado!" : "📋 Copiar"}
-                        </button>
-                      </div>
-                      <p className="text-[11px] text-gray-500 text-center">
-                        O oponente deve colar esse ID em{" "}
-                        <strong>"Aceitar Convite"</strong> no lobby.
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
+        <div className="flex flex-col lg:flex-row gap-8 w-full">
+          {/* ── Dock (left sidebar) ───────────────────────────────── */}
+          <div className="w-full lg:w-80 shrink-0 bg-slate-900/80 border border-slate-800 backdrop-blur-sm rounded-xl p-6 flex flex-col gap-6 h-fit">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold text-slate-200 uppercase tracking-widest flex items-center gap-2">
+                <Anchor className="w-5 h-5" />
+                Porto de Guerra
+              </h3>
             </div>
 
-            {/* ── Board ──────────────────────────────────────────────── */}
-            <div className="lg:col-span-2 flex items-center justify-center bg-blue-950/40 rounded-3xl p-6 border border-white/5 shadow-inner">
-              <SetupGrid onCellClick={handleCellClick}>
-                {/* Droppable layer — invisible but receives drops */}
-                {Array.from({ length: GRID_SIZE }, (_, y) =>
-                  Array.from({ length: GRID_SIZE }, (_, x) => (
-                    <div
-                      key={`drop-${x}-${y}`}
-                      className="absolute"
-                      style={{
-                        left: x * CELL_SIZE,
-                        top: y * CELL_SIZE,
-                        width: CELL_SIZE,
-                        height: CELL_SIZE,
-                      }}
-                    >
-                      <DroppableCell x={x} y={y} onClick={handleCellClick} />
-                    </div>
-                  )),
-                )}
+            {availableShips.length === 0 && (
+              <p className="text-xs text-slate-500 italic">
+                Todos os navios foram posicionados.
+              </p>
+            )}
 
-                {/* Placed ships — draggable on the board */}
-                {placedShips.map((ship) => (
+            <div className="flex flex-col gap-4">
+              {availableShips.map((ship) => {
+                const config = FLEET_CONFIG[ship.type];
+                const isSelected = ship.id === selectedId;
+
+                return (
                   <div
                     key={ship.id}
-                    className="absolute z-10 pointer-events-auto"
-                    style={{
-                      left: ship.x * CELL_SIZE,
-                      top: ship.y * CELL_SIZE,
-                    }}
+                    onClick={() =>
+                      setSelectedId((prev) =>
+                        prev === ship.id ? null : ship.id,
+                      )
+                    }
+                    className={
+                      "relative p-4 rounded-lg border-2 transition-all cursor-pointer group select-none " +
+                      (isSelected
+                        ? "bg-cyan-950/40 border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                        : "bg-slate-950/40 border-slate-800 hover:border-slate-600 hover:bg-slate-900")
+                    }
                   >
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium text-sm text-slate-300">
+                        {config.label}
+                        <span className="ml-1.5 text-slate-500 font-normal">
+                          ({config.size} casas)
+                        </span>
+                      </span>
+                      {isSelected && (
+                        <span className="text-[10px] font-bold text-cyan-400 animate-pulse">
+                          Selecionado...
+                        </span>
+                      )}
+                    </div>
+
                     <DraggableShip
                       shipId={ship.id}
                       type={ship.type}
@@ -442,20 +337,137 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
                       }
                     />
                   </div>
-                ))}
-              </SetupGrid>
+                );
+              })}
             </div>
+
+            {/* ── Controls ───────────────────────────────────────── */}
+            <div className="pt-4 border-t border-slate-800 space-y-3">
+              {/* Rotate */}
+              <Button
+                onClick={() => {
+                  if (selectedId) rotateShip(selectedId);
+                }}
+                variant="outline"
+                className="w-full border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800"
+                disabled={!selectedId || isDeploying}
+              >
+                🔄 Girar Navio
+              </Button>
+
+              {/* Confirm / Deploy */}
+              <Button
+                onClick={handleConfirm}
+                variant="default"
+                className={
+                  "w-full h-12 font-bold transition-all " +
+                  (canConfirm
+                    ? "bg-cyan-600 hover:bg-cyan-500 text-white shadow-[0_0_20px_rgba(8,145,178,0.4)]"
+                    : "bg-slate-800 text-slate-500 cursor-not-allowed")
+                }
+                disabled={!canConfirm}
+                isLoading={isDeploying}
+              >
+                {isDeploying ? "Enviando Frota..." : "✓ Zarpar Frota"}
+              </Button>
+
+              {/* Reset */}
+              <Button
+                onClick={resetFleet}
+                variant="ghost"
+                className="w-full text-red-400 hover:bg-red-950/20 hover:text-red-300"
+                disabled={!!isPlayerReady || isDeploying}
+              >
+                Reiniciar Tabuleiro
+              </Button>
+
+              <Button
+                onClick={() => router.push("/lobby")}
+                variant="ghost"
+                className="w-full text-slate-400 hover:text-white"
+              >
+                ← Retornar ao Menu Principal
+              </Button>
+            </div>
+
+            {/* Error toast */}
+            {errorMsg && (
+              <div className="p-3 bg-red-900/40 border border-red-500/50 rounded-lg animate-in fade-in">
+                <p className="text-red-300 text-sm text-center">⚠ {errorMsg}</p>
+              </div>
+            )}
+
+            {/* Success / waiting state */}
+            {(isPlayerReady || setupMatch.isSuccess) && (
+              <div className="p-4 bg-emerald-900/30 border border-emerald-600/40 rounded-lg">
+                <p className="text-emerald-400 text-center font-bold animate-pulse">
+                  ⚓ AGUARDANDO COMANDANTE ADVERSÁRIO...
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* ── Back to lobby ─────────────────────────────────────────── */}
-          <div className="mt-12 text-center">
-            <Button
-              onClick={() => router.push("/lobby")}
-              variant="ghost"
-              className="text-gray-400 hover:text-white transition-colors"
+          {/* ── Board ──────────────────────────────────────────────── */}
+          <div ref={boardRef} className="flex-1 min-w-0">
+            <div
+              style={{
+                width: GRID_NATURAL * gridScale,
+                height: GRID_NATURAL * gridScale,
+                position: "relative",
+              }}
             >
-              ← Retornar ao Menu Principal
-            </Button>
+              <div
+                style={{
+                  transform: `scale(${gridScale})`,
+                  transformOrigin: "top left",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                }}
+              >
+                <SetupGrid onCellClick={handleCellClick}>
+                  {/* Droppable layer — invisible but receives drops */}
+                  {Array.from({ length: GRID_SIZE }, (_, y) =>
+                    Array.from({ length: GRID_SIZE }, (_, x) => (
+                      <div
+                        key={`drop-${x}-${y}`}
+                        className="absolute"
+                        style={{
+                          left: x * CELL_SIZE,
+                          top: y * CELL_SIZE,
+                          width: CELL_SIZE,
+                          height: CELL_SIZE,
+                        }}
+                      >
+                        <DroppableCell x={x} y={y} onClick={handleCellClick} />
+                      </div>
+                    )),
+                  )}
+
+                  {/* Placed ships — draggable on the board */}
+                  {placedShips.map((ship) => (
+                    <div
+                      key={ship.id}
+                      className="absolute z-10 pointer-events-auto"
+                      style={{
+                        left: ship.x * CELL_SIZE,
+                        top: ship.y * CELL_SIZE,
+                      }}
+                    >
+                      <DraggableShip
+                        shipId={ship.id}
+                        type={ship.type}
+                        size={ship.size}
+                        orientation={ship.orientation}
+                        disabled={
+                          !!isPlayerReady || isDeploying || setupMatch.isSuccess
+                        }
+                      />
+                    </div>
+                  ))}
+                </SetupGrid>
+              </div>
+            </div>
           </div>
         </div>
       </div>

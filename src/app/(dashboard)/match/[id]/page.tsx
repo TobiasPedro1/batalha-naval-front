@@ -2,12 +2,12 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import SetupPhase from "./SetupPhase";
 import BattlePhase from "./BattlePhase";
 import { useMatchQuery } from "@/hooks/queries/useMatchQuery";
 import { useRouter, useParams } from "next/navigation";
 import { MatchGameState } from "@/types/api-responses";
 import { MatchStatus, CellState } from "@/types/game-enums";
+import SetupPhase from "./SetupPhase";
 
 export default function MatchPage() {
   const params = useParams();

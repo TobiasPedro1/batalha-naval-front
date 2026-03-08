@@ -179,7 +179,9 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors"
-                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                    aria-label={
+                      showPassword ? "Ocultar senha" : "Mostrar senha"
+                    }
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -217,7 +219,9 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors"
-                    aria-label={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
+                    aria-label={
+                      showConfirmPassword ? "Ocultar senha" : "Mostrar senha"
+                    }
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4" />

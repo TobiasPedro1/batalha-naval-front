@@ -9,62 +9,87 @@ import { GRID_SIZE } from "@/lib/constants";
 interface GridProps {
   grid: CellState[][];
   onCellClick?: (row: number, col: number) => void;
+  onCellHover?: (row: number, col: number) => void;
+  onCellLeave?: () => void;
   readOnly?: boolean;
   showShips?: boolean;
   animatingCell?: { row: number; col: number; type: "hit" | "miss" } | null;
+  previewCells?: { x: number; y: number; isValid: boolean }[];
   highlightedCells?: Set<string>;
 }
 
 export const Grid: React.FC<GridProps> = ({
   grid,
   onCellClick,
+  onCellHover,
+  onCellLeave,
   readOnly = false,
   showShips = true,
   animatingCell = null,
+  previewCells = [],
   highlightedCells,
 }) => {
+  const getPreviewState = (col: number, row: number) => {
+    const preview = previewCells.find((p) => p.x === col && p.y === row);
+    if (preview) return { isPreview: true, isValid: preview.isValid };
+
+    const highlighted = highlightedCells?.has(`${row}-${col}`) ?? false;
+    return { isPreview: highlighted, isValid: true };
+  };
+
   return (
-    <div className="inline-block bg-gray-800 p-4 rounded-lg shadow-xl">
-      {/* Cabeçalho com letras (A-J) */}
-      <div className="flex mb-2">
-        <div className="w-8 h-8" /> {/* Espaço vazio no canto */}
-        {Array.from({ length: GRID_SIZE }, (_, i) => (
-          <div
-            key={i}
-            className="w-10 h-8 flex items-center justify-center text-white font-bold"
-          >
-            {String.fromCharCode(65 + i)}
+    <div className="relative p-4 md:p-8 bg-slate-900/50 rounded-xl border border-slate-800 shadow-2xl backdrop-blur-md select-none inline-block">
+      <div>
+        <div className="flex">
+          <div className="w-8 h-8 md:w-10 md:h-10" />
+          {Array.from({ length: GRID_SIZE }, (_, i) => (
+            <div
+              key={i}
+              className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-slate-400 font-bold text-xs md:text-sm"
+            >
+              {String.fromCharCode(65 + i)}
+            </div>
+          ))}
+        </div>
+
+        {grid.map((row, rowIndex) => (
+          <div key={rowIndex} className="flex">
+            <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-slate-400 font-bold text-xs md:text-sm">
+              {rowIndex + 1}
+            </div>
+
+            {row.map((cellState, colIndex) => {
+              const { isPreview, isValid } = getPreviewState(colIndex, rowIndex);
+
+              return (
+                <Cell
+                  key={`${rowIndex}-${colIndex}`}
+                  state={cellState}
+                  onClick={() => onCellClick?.(rowIndex, colIndex)}
+                  onMouseEnter={() => onCellHover?.(rowIndex, colIndex)}
+                  onMouseLeave={onCellLeave}
+                  disabled={readOnly}
+                  showShip={showShips}
+                  isAnimating={
+                    animatingCell &&
+                    animatingCell.row === rowIndex &&
+                    animatingCell.col === colIndex
+                      ? animatingCell.type
+                      : null
+                  }
+                  isPreview={isPreview}
+                  isValidPreview={isValid}
+                />
+              );
+            })}
           </div>
         ))}
       </div>
 
-      {/* Grid com células */}
-      {grid.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex">
-          {/* Número da linha (1-10) */}
-          <div className="w-8 h-10 flex items-center justify-center text-white font-bold">
-            {rowIndex + 1}
-          </div>
-
-          {row.map((cellState, colIndex) => (
-            <Cell
-              key={`${rowIndex}-${colIndex}`}
-              state={cellState}
-              onClick={() => onCellClick?.(rowIndex, colIndex)}
-              disabled={readOnly}
-              showShip={showShips}
-              isHighlighted={highlightedCells?.has(`${rowIndex}-${colIndex}`)}
-              isAnimating={
-                animatingCell &&
-                animatingCell.row === rowIndex &&
-                animatingCell.col === colIndex
-                  ? animatingCell.type
-                  : null
-              }
-            />
-          ))}
-        </div>
-      ))}
+      <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-500/50 rounded-tl-lg m-2 pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-500/50 rounded-tr-lg m-2 pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-cyan-500/50 rounded-bl-lg m-2 pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-500/50 rounded-br-lg m-2 pointer-events-none"></div>
     </div>
   );
 };

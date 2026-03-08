@@ -360,7 +360,7 @@ export const GameModeSelector: React.FC = () => {
               "w-full rounded-2xl text-white font-bold h-12 transition-all",
               isCampaignCompleted
                 ? "bg-slate-800 opacity-50 cursor-not-allowed"
-                : "bg-gradient-to-r from-yellow-600 to-amber-700 hover:scale-[1.01] active:scale-[0.99] shadow-[0_0_20px_rgba(217,119,6,0.3)]",
+                : "w-full rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-800 hover: text-white font-bold h-12 shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all hover:scale-[1.01] active:scale-[0.99]",
             )}
             size="lg"
           >

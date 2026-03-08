@@ -84,6 +84,8 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   /** Id of the currently "selected" ship (for click-to-place & rotation). */
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  /** Feedback for copy-to-clipboard. */
+  const [copied, setCopied] = useState(false);
 
   /** The ship object corresponding to `activeId`. */
   const activeShip = activeId
@@ -350,26 +352,34 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
 
                 {/* Success / waiting state */}
                 {(isPlayerReady || setupMatch.isSuccess) && (
-                  <div className="mt-6 p-4 bg-green-900/30 border border-green-600/40 rounded-lg space-y-3">
+                  <div className="mt-6 p-4 bg-green-900/30 border border-green-600/40 rounded-lg space-y-4">
                     <p className="text-green-400 text-center font-bold animate-pulse">
                       ⚓ AGUARDANDO COMANDANTE ADVERSÁRIO...
                     </p>
-                    <p className="text-xs text-gray-400 text-center">
-                      Compartilhe o ID da partida com seu oponente:
-                    </p>
-                    <div className="flex items-center gap-2 justify-center">
-                      <code className="text-xs bg-black/40 text-cyan-300 px-3 py-1.5 rounded font-mono select-all break-all">
-                        {match.id}
-                      </code>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(match.id);
-                        }}
-                        className="text-xs bg-cyan-700/30 hover:bg-cyan-700/50 text-cyan-300 px-2 py-1.5 rounded transition-colors"
-                        title="Copiar ID"
-                      >
-                        📋
-                      </button>
+
+                    <div className="space-y-2">
+                      <p className="text-xs text-gray-400 text-center">
+                        Envie este ID para o seu oponente aceitar o convite:
+                      </p>
+                      <div className="flex items-center gap-2 justify-center">
+                        <code className="text-sm bg-black/50 text-cyan-300 px-4 py-2 rounded-lg font-mono select-all break-all border border-cyan-800/30">
+                          {match.id}
+                        </code>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(match.id);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
+                          }}
+                          className="text-xs bg-cyan-700/30 hover:bg-cyan-700/50 text-cyan-300 px-3 py-2 rounded-lg transition-colors whitespace-nowrap"
+                          title="Copiar ID da partida"
+                        >
+                          {copied ? '✓ Copiado!' : '📋 Copiar'}
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-gray-500 text-center">
+                        O oponente deve colar esse ID em <strong>"Aceitar Convite"</strong> no lobby.
+                      </p>
                     </div>
                   </div>
                 )}

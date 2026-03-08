@@ -22,6 +22,15 @@ export default function MatchPage() {
         ? localStorage.getItem("matchId")
         : null;
 
+  // Sincroniza o matchId da URL com o localStorage.
+  // Essencial para Player B (convidado): ele chega via URL, mas o
+  // useSetupMatchMutation lê o matchId do localStorage.
+  useEffect(() => {
+    if (matchId && typeof window !== "undefined") {
+      localStorage.setItem("matchId", matchId);
+    }
+  }, [matchId]);
+
   // Busca o estado REAL do servidor
   const { data: gameState, isLoading, error } = useMatchQuery(matchId || "");
 

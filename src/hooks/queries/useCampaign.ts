@@ -18,7 +18,7 @@ export const useStartCampaignMutation = () => {
       // Invalida a query para manter a interface atualizada
       queryClient.invalidateQueries({ queryKey: ["campaignProgress"] });
       queryClient.invalidateQueries({ queryKey: ["matches"] });
-      
+
       if (typeof window !== "undefined") {
         localStorage.setItem("matchId", data.matchId);
       }

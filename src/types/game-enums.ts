@@ -23,6 +23,13 @@ export enum ShipType {
   SUBMARINO = "Submarino", // 2 células
 }
 
+export enum MoveDirection {
+  NORTH = "North",
+  SOUTH = "South",
+  EAST = "East",
+  WEST = "West",
+}
+
 export type Coordinate = {
   row: number;
   col: number;

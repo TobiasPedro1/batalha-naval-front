@@ -67,10 +67,10 @@ export default function LobbyPage() {
                 variant="link"
                 className="w-full p-4 justify-start text-slate-300 hover:text-white border-slate-700 hover:bg-slate-800 hover:border-cyan-500/50 transition-all group"
                 onClick={() => router.push("/history")}
-                >
-                  <ScrollText className="mr-3 h-6 w-6 text-purple-500 group-hover:text-purple-400" />
-                  Histórico de Batalhas
-                </Button>
+              >
+                <ScrollText className="mr-3 h-6 w-6 text-purple-500 group-hover:text-purple-400" />
+                Histórico de Batalhas
+              </Button>
             </CardContent>
           </Card>
         </div>

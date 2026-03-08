@@ -5,13 +5,13 @@
  * ships). The `shipId` is used as the draggable id so the `DndContext` handler
  * can identify which ship is being moved.
  */
-'use client';
+"use client";
 
-import React from 'react';
-import { useDraggable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
-import { ShipType, ShipOrientation } from '@/types/game-enums';
-import { ShipUnit } from './ShipUnit';
+import React from "react";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
+import { ShipType, ShipOrientation } from "@/types/game-enums";
+import { ShipUnit } from "./ShipUnit";
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -49,7 +49,7 @@ export const DraggableShip: React.FC<DraggableShipProps> = ({
     // While dragging the "origin" copy becomes invisible — the DragOverlay
     // renders the cursor-attached preview instead.
     opacity: isDragging ? 0 : 1,
-    cursor: disabled ? 'not-allowed' : 'grab',
+    cursor: disabled ? "not-allowed" : "grab",
   };
 
   return (

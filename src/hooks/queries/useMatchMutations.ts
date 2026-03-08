@@ -1,8 +1,9 @@
 // React Query hooks para mutations de match
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { matchService } from '@/services/matchService';
-import { SetupShipPayload, ShootPayload, Match } from '@/types/api-responses';
-import { CreateMatch } from '@/types/api-requests';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { matchService } from "@/services/matchService";
+import { SetupShipPayload, ShootPayload, Match } from "@/types/api-responses";
+import { CreateMatch } from "@/types/api-requests";
+import { MoveDirection } from "@/types/game-enums";
 
 export const useCreateMatchMutation = () => {
   const queryClient = useQueryClient();
@@ -30,15 +31,15 @@ export const useSetupMatchMutation = () => {
 
   return useMutation({
     mutationFn: (ships: SetupShipPayload[]) => {
-      const storedId = localStorage.getItem('matchId');
+      const storedId = localStorage.getItem("matchId");
       if (!storedId) {
-        throw new Error('Match ID NOT FOUND in localStorage');
+        throw new Error("Match ID NOT FOUND in localStorage");
       }
 
       return matchService.setupFleet(storedId, ships);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['match'] });
+      queryClient.invalidateQueries({ queryKey: ["match"] });
     },
     // Error handling is delegated to the caller so SetupPhase can
     // display contextual feedback (toast / inline message).
@@ -95,6 +96,22 @@ export const useForfeitMutation = (matchId: string) => {
       queryClient.invalidateQueries({ queryKey: ["match", matchId] });
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
       queryClient.invalidateQueries({ queryKey: ["leaderBoard"] });
+    },
+  });
+};
+
+export const useMoveShipMutation = (matchId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: { shipId: string; direction: MoveDirection }) =>
+      matchService.moveShip({
+        matchId,
+        shipId: input.shipId,
+        direction: input.direction,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["match", matchId] });
     },
   });
 };

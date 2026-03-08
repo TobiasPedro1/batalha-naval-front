@@ -1,5 +1,8 @@
 import api from "./api";
-import { CampaignProgressDto, StartCampaignMatchResponseDto } from "@/types/api-responses";
+import {
+  CampaignProgressDto,
+  StartCampaignMatchResponseDto,
+} from "@/types/api-responses";
 
 export const campaignService = {
   getProgress: async (): Promise<CampaignProgressDto> => {

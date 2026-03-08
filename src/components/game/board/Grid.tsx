@@ -12,6 +12,7 @@ interface GridProps {
   readOnly?: boolean;
   showShips?: boolean;
   animatingCell?: { row: number; col: number; type: "hit" | "miss" } | null;
+  highlightedCells?: Set<string>;
 }
 
 export const Grid: React.FC<GridProps> = ({
@@ -20,6 +21,7 @@ export const Grid: React.FC<GridProps> = ({
   readOnly = false,
   showShips = true,
   animatingCell = null,
+  highlightedCells,
 }) => {
   return (
     <div className="inline-block bg-gray-800 p-4 rounded-lg shadow-xl">
@@ -51,6 +53,7 @@ export const Grid: React.FC<GridProps> = ({
               onClick={() => onCellClick?.(rowIndex, colIndex)}
               disabled={readOnly}
               showShip={showShips}
+              isHighlighted={highlightedCells?.has(`${rowIndex}-${colIndex}`)}
               isAnimating={
                 animatingCell &&
                 animatingCell.row === rowIndex &&

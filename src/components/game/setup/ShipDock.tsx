@@ -5,13 +5,13 @@
  * list of `ShipUnit` cards. No drag-and-drop yet — each card is
  * click-selectable to prepare for future interaction.
  */
-'use client';
+"use client";
 
-import React from 'react';
-import { useSetupStore } from '@/stores/useSetupStore';
-import { FLEET_CONFIG } from '@/lib/game-rules';
-import { ShipUnit } from './ShipUnit';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { useSetupStore } from "@/stores/useSetupStore";
+import { FLEET_CONFIG } from "@/lib/game-rules";
+import { ShipUnit } from "./ShipUnit";
+import { cn } from "@/lib/utils";
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -36,7 +36,7 @@ export const ShipDock: React.FC<ShipDockProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col gap-3 rounded-xl border border-naval-border bg-naval-surface/80 p-4',
+        "flex flex-col gap-3 rounded-xl border border-naval-border bg-naval-surface/80 p-4",
         className,
       )}
     >
@@ -63,11 +63,11 @@ export const ShipDock: React.FC<ShipDockProps> = ({
               type="button"
               onClick={() => onSelect?.(ship.id)}
               className={cn(
-                'flex flex-col items-start gap-1 rounded-lg p-3 transition-colors',
-                'hover:bg-naval-action/10',
+                "flex flex-col items-start gap-1 rounded-lg p-3 transition-colors",
+                "hover:bg-naval-action/10",
                 isSelected
-                  ? 'ring-2 ring-naval-action bg-naval-action/10'
-                  : 'bg-naval-bg/40',
+                  ? "ring-2 ring-naval-action bg-naval-action/10"
+                  : "bg-naval-bg/40",
               )}
             >
               {/* Label + size */}

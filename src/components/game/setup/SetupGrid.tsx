@@ -10,11 +10,11 @@
  *
  * No game logic or drag-and-drop code lives here — it's visual only.
  */
-'use client';
+"use client";
 
-import React from 'react';
-import { GRID_SIZE, CELL_SIZE } from '@/lib/game-rules';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { GRID_SIZE, CELL_SIZE } from "@/lib/game-rules";
+import { cn } from "@/lib/utils";
 
 // ─── Cell Props ──────────────────────────────────────────────────────────────
 
@@ -41,9 +41,9 @@ const SetupCell: React.FC<SetupCellProps> = ({
   onClick,
 }) => {
   // Determine highlight colour
-  let highlight = '';
-  if (isOver && isValid === true)  highlight = 'bg-emerald-500/40';
-  if (isOver && isValid === false) highlight = 'bg-red-500/40';
+  let highlight = "";
+  if (isOver && isValid === true) highlight = "bg-emerald-500/40";
+  if (isOver && isValid === false) highlight = "bg-red-500/40";
 
   return (
     <button
@@ -51,9 +51,9 @@ const SetupCell: React.FC<SetupCellProps> = ({
       onClick={() => onClick?.(x, y)}
       style={{ width: CELL_SIZE, height: CELL_SIZE }}
       className={cn(
-        'border border-naval-border/60 transition-colors duration-100',
+        "border border-naval-border/60 transition-colors duration-100",
         // default water colour
-        'bg-naval-bg/80 hover:bg-naval-action/20',
+        "bg-naval-bg/80 hover:bg-naval-action/20",
         // drop highlight overrides
         highlight,
       )}
@@ -122,21 +122,19 @@ export const SetupGrid: React.FC<SetupGridProps> = ({
         </div>
 
         {/* ── Cell area — relative context for absolute ship overlays ── */}
-        <div
-          className="relative"
-          style={{ width: gridPx, height: gridPx }}
-        >
+        <div className="relative" style={{ width: gridPx, height: gridPx }}>
           {/* Background grid of cells */}
-          <div className="absolute inset-0 grid"
+          <div
+            className="absolute inset-0 grid"
             style={{
               gridTemplateColumns: `repeat(${GRID_SIZE}, ${CELL_SIZE}px)`,
-              gridTemplateRows:    `repeat(${GRID_SIZE}, ${CELL_SIZE}px)`,
+              gridTemplateRows: `repeat(${GRID_SIZE}, ${CELL_SIZE}px)`,
             }}
           >
             {Array.from({ length: GRID_SIZE }, (_, y) =>
               Array.from({ length: GRID_SIZE }, (_, x) => {
                 const key = `${x},${y}`;
-                const hl  = highlights?.get(key);
+                const hl = highlights?.get(key);
 
                 return (
                   <SetupCell

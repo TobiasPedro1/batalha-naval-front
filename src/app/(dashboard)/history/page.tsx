@@ -39,8 +39,8 @@ export default function HistoryPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-4 mb-6">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="bg-slate-800 border-slate-700 hover:bg-slate-700 text-white"
           onClick={() => router.push("/lobby")}
         >
@@ -55,24 +55,34 @@ export default function HistoryPage() {
           <CardTitle className="text-cyan-400">Suas últimas missões</CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading && <p className="text-slate-400">Buscando registros táticos...</p>}
-          {isError && <p className="text-red-400">Falha ao acessar os arquivos da marinha.</p>}
-          
+          {isLoading && (
+            <p className="text-slate-400">Buscando registros táticos...</p>
+          )}
+          {isError && (
+            <p className="text-red-400">
+              Falha ao acessar os arquivos da marinha.
+            </p>
+          )}
+
           {history && history.length === 0 && (
             <div className="text-center py-10">
               <Swords className="w-12 h-12 text-slate-600 mx-auto mb-3 opacity-50" />
-              <p className="text-slate-400">Você ainda não participou de nenhuma batalha.</p>
+              <p className="text-slate-400">
+                Você ainda não participou de nenhuma batalha.
+              </p>
             </div>
           )}
 
           <div className="space-y-3">
             {history?.map((match) => (
-              <div 
-                key={match.id} 
+              <div
+                key={match.id}
                 className="flex items-center justify-between p-4 rounded-lg border border-slate-700 bg-slate-800/50 hover:bg-slate-800 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-full border ${getResultColor(match.result)}`}>
+                  <div
+                    className={`p-3 rounded-full border ${getResultColor(match.result)}`}
+                  >
                     {getResultIcon(match.result)}
                   </div>
                   <div>
@@ -84,7 +94,11 @@ export default function HistoryPage() {
                         {match.gameMode}
                       </span>
                       <span>
-                        {format(parseISO(match.playedAt), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+                        {format(
+                          parseISO(match.playedAt),
+                          "dd 'de' MMMM 'às' HH:mm",
+                          { locale: ptBR },
+                        )}
                       </span>
                     </div>
                   </div>
@@ -93,7 +107,8 @@ export default function HistoryPage() {
                 {match.duration && (
                   <div className="flex items-center text-slate-400 text-sm bg-slate-900/50 px-3 py-1.5 rounded-md border border-slate-800">
                     <Clock className="w-4 h-4 mr-1.5 text-cyan-500" />
-                    {match.duration.substring(0, 8)} {/* Formata o TimeSpan para HH:mm:ss */}
+                    {match.duration.substring(0, 8)}{" "}
+                    {/* Formata o TimeSpan para HH:mm:ss */}
                   </div>
                 )}
               </div>

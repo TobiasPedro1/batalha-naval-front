@@ -11,6 +11,7 @@ interface CellProps {
   disabled?: boolean;
   showShip?: boolean;
   isAnimating?: "hit" | "miss" | null;
+  isHighlighted?: boolean;
 }
 
 export const Cell: React.FC<CellProps> = ({
@@ -19,6 +20,7 @@ export const Cell: React.FC<CellProps> = ({
   disabled = false,
   showShip = true,
   isAnimating = null,
+  isHighlighted = false,
 }) => {
   const getCellStyle = () => {
     switch (state) {
@@ -56,6 +58,7 @@ export const Cell: React.FC<CellProps> = ({
         "w-10 h-10 border border-gray-700 flex items-center justify-center",
         "transition-all duration-200",
         getCellStyle(),
+        isHighlighted && "ring-2 ring-cyan-400 ring-inset z-10 brightness-125",
         !disabled &&
           state !== CellState.HIT &&
           state !== CellState.MISS &&

@@ -1,7 +1,13 @@
 // Componente de Combate (Battle Phase)
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+} from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { ShipDto, MatchStatsDto, ShootResponse } from "@/types/api-responses";
@@ -12,13 +18,21 @@ import { FleetStatus } from "@/components/game/HUD/FleetStatus";
 import { GameControls } from "@/components/game/HUD/GameControls";
 import { Button } from "@/components/ui/Button";
 import { ToastContainer, useToast } from "@/components/ui/Toast";
-import { MatchStatus, CellState } from "@/types/game-enums";
+import {
+  MatchStatus,
+  CellState,
+  ShipOrientation,
+  MoveDirection,
+} from "@/types/game-enums";
 import { GRID_SIZE } from "@/lib/constants";
+import { SHIP_NAMES } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { useTurnTimer } from "@/hooks/useTurnTimer";
 import {
   useShootMutation,
   useForfeitMutation,
+  useMoveShipMutation,
 } from "@/hooks/queries/useMatchMutations";
 
 /**
@@ -44,11 +58,45 @@ interface BattlePhaseProps {
   match: AdaptedMatch;
 }
 
+// ─── Helpers para movimentação (Modo Dinâmico) ──────────────────────────────
+
+/** Verifica se um navio está avariado (qualquer célula atingida). */
+function isShipDamaged(ship: ShipDto): boolean {
+  return ship.coordinates?.some((c) => c.isHit) ?? false;
+}
+
+/** Retorna as direções permitidas para um navio com base na orientação. */
+function getAllowedDirections(ship: ShipDto): MoveDirection[] {
+  if (ship.size <= 1) {
+    return [
+      MoveDirection.NORTH,
+      MoveDirection.SOUTH,
+      MoveDirection.EAST,
+      MoveDirection.WEST,
+    ];
+  }
+  if (ship.orientation === ShipOrientation.VERTICAL) {
+    return [MoveDirection.NORTH, MoveDirection.SOUTH];
+  }
+  return [MoveDirection.EAST, MoveDirection.WEST];
+}
+
+const DIRECTION_LABELS: Record<
+  MoveDirection,
+  { label: string; arrow: string }
+> = {
+  [MoveDirection.NORTH]: { label: "Norte", arrow: "↑" },
+  [MoveDirection.SOUTH]: { label: "Sul", arrow: "↓" },
+  [MoveDirection.EAST]: { label: "Leste", arrow: "→" },
+  [MoveDirection.WEST]: { label: "Oeste", arrow: "←" },
+};
+
 export default function BattlePhase({ match }: BattlePhaseProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const shoot = useShootMutation(match.id);
   const forfeit = useForfeitMutation(match.id);
+  const moveShip = useMoveShipMutation(match.id);
   const { playHit, playMiss, playSunk, playVictory } = useGameSounds();
   const { messages, addToast, removeToast } = useToast();
 
@@ -67,12 +115,26 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
   // Usado como fallback caso match.isWinner não esteja determinado corretamente.
   const [didIWinByShooting, setDidIWinByShooting] = useState(false);
 
+  // ─── Estado do Modo Dinâmico ───────────────────────────────────────────────
+  const [selectedShipId, setSelectedShipId] = useState<string | null>(null);
+  const [hasMovedThisTurn, setHasMovedThisTurn] = useState(false);
+  // Se o backend rejeitar o primeiro move com "só é permitida no modo Dinâmico",
+  // desabilita os controles para o resto da partida.
+  const [isDynamicMode, setIsDynamicMode] = useState(true);
+
   const isMyTurn = match.isMyTurn;
   const isFinished = match.status === MatchStatus.FINISHED;
   const isShooting = shoot.isPending;
+  const isMoving = moveShip.isPending;
 
   // Vitória combinada: usa match.isWinner do parent, com fallback do handleAttack
   const resolvedIsWinner = match.isWinner ?? (didIWinByShooting ? true : null);
+
+  // Reseta o estado de movimento quando o turno muda
+  useEffect(() => {
+    setHasMovedThisTurn(false);
+    setSelectedShipId(null);
+  }, [isMyTurn]);
 
   // Timer de turno + polling de timeout
   // Callbacks são estabilizados internamente via refs no hook — não precisa de useCallback aqui
@@ -119,6 +181,57 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
   const myShips = match.player1Board?.ships ?? [];
   const opponentShips = match.player2Board?.ships ?? [];
 
+  // ─── Modo Dinâmico: navio selecionado + highlighted cells ──────────────────
+  const selectedShip = useMemo(
+    () => myShips.find((s) => s.id === selectedShipId) ?? null,
+    [myShips, selectedShipId],
+  );
+
+  const highlightedCells = useMemo(() => {
+    if (!selectedShip) return undefined;
+    const cells = new Set<string>();
+    // Backend: x = col, y = row → frontend grid usa [row][col]
+    for (const coord of selectedShip.coordinates) {
+      cells.add(`${coord.y}-${coord.x}`);
+    }
+    return cells;
+  }, [selectedShip]);
+
+  /** Handler de movimento de navio (Modo Dinâmico) */
+  const handleMoveShip = useCallback(
+    async (direction: MoveDirection) => {
+      if (!selectedShipId || !isMyTurn || isFinished || isMoving) return;
+
+      try {
+        await moveShip.mutateAsync({ shipId: selectedShipId, direction });
+        setHasMovedThisTurn(true);
+        addToast("Navio movido com sucesso!", "info", 2000);
+      } catch (error: unknown) {
+        const err = error as {
+          response?: { data?: { message?: string } };
+          message?: string;
+        };
+        const msg =
+          err?.response?.data?.message ||
+          err?.message ||
+          "Erro ao mover navio.";
+
+        // Detecta se o backend rejeitou por não ser modo Dinâmico
+        if (msg.includes("modo Dinâmico") || msg.includes("Dynamic")) {
+          setIsDynamicMode(false);
+          addToast(
+            "Esta partida é no modo Clássico — navios não podem ser movidos.",
+            "info",
+            4000,
+          );
+        } else {
+          addToast(msg, "info", 3000);
+        }
+      }
+    },
+    [selectedShipId, isMyTurn, isFinished, isMoving, moveShip, addToast],
+  );
+
   /** Handler de ataque com animações, sons e toasts */
   const handleAttack = useCallback(
     async (row: number, col: number) => {
@@ -162,6 +275,12 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
 
         // 5. Reseta o timer após tiro bem-sucedido (turno muda)
         resetTimer();
+
+        // 5b. Modo Dinâmico: acertou → pode mover de novo no próximo sub-turno
+        if (result.isHit) {
+          setHasMovedThisTurn(false);
+          setSelectedShipId(null);
+        }
 
         // 6. Game Over — se EU atirei e o jogo acabou, EU venci.
         //    Marca a ref IMEDIATAMENTE para que o banner e o useEffect
@@ -309,10 +428,167 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
             />
           </div>
 
-          {/* Meu Tabuleiro (somente leitura) */}
+          {/* Meu Tabuleiro + Painel de Movimento */}
           <div className="flex flex-col items-center">
             <h3 className="text-xl font-bold mb-4 text-white">Seu Tabuleiro</h3>
-            <Grid grid={myGrid} readOnly={true} showShips={true} />
+            <Grid
+              grid={myGrid}
+              readOnly={true}
+              showShips={true}
+              highlightedCells={highlightedCells}
+            />
+
+            {/* ── Painel de Movimento (Modo Dinâmico) ────────────────────── */}
+            {isDynamicMode && isMyTurn && !isFinished && (
+              <div className="mt-4 w-full max-w-sm bg-slate-800/70 border border-slate-700 rounded-xl p-4 space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-bold text-purple-400">
+                    ⚡ Modo Dinâmico
+                  </span>
+                  {hasMovedThisTurn && (
+                    <span className="text-xs bg-green-700/40 text-green-300 px-2 py-0.5 rounded-full">
+                      Movimento realizado
+                    </span>
+                  )}
+                </div>
+
+                {/* Seleção de navio */}
+                <div className="space-y-1">
+                  <p className="text-xs text-slate-400">
+                    Selecione um navio para mover:
+                  </p>
+                  <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto">
+                    {myShips
+                      .filter((s) => !s.isSunk)
+                      .map((ship) => {
+                        const damaged = isShipDamaged(ship);
+                        const isSelected = ship.id === selectedShipId;
+                        const displayName =
+                          SHIP_NAMES[ship.name as keyof typeof SHIP_NAMES] ||
+                          ship.name;
+
+                        return (
+                          <button
+                            key={ship.id}
+                            onClick={() =>
+                              setSelectedShipId(isSelected ? null : ship.id)
+                            }
+                            disabled={damaged || hasMovedThisTurn}
+                            className={cn(
+                              "flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition-all text-left",
+                              isSelected
+                                ? "bg-cyan-600/30 border border-cyan-500 text-cyan-200"
+                                : damaged
+                                  ? "bg-red-900/20 border border-red-800/30 text-red-400 cursor-not-allowed opacity-60"
+                                  : hasMovedThisTurn
+                                    ? "bg-slate-700/30 border border-slate-700 text-slate-500 cursor-not-allowed"
+                                    : "bg-slate-700/50 border border-slate-600 text-slate-300 hover:border-cyan-600/50 hover:bg-slate-700/80",
+                            )}
+                          >
+                            <span className="truncate">{displayName}</span>
+                            <span className="ml-2 whitespace-nowrap">
+                              {damaged
+                                ? "🔥 Avariado"
+                                : ship.orientation === ShipOrientation.VERTICAL
+                                  ? "↕"
+                                  : "↔"}
+                            </span>
+                          </button>
+                        );
+                      })}
+                  </div>
+                </div>
+
+                {/* Botões direcionais */}
+                {selectedShip && !hasMovedThisTurn && (
+                  <div className="flex flex-col items-center gap-1 pt-1">
+                    <p className="text-[11px] text-slate-500 mb-1">
+                      {selectedShip.size <= 1
+                        ? "Submarino: move em qualquer direção"
+                        : selectedShip.orientation === ShipOrientation.VERTICAL
+                          ? "Vertical: move Norte/Sul"
+                          : "Horizontal: move Leste/Oeste"}
+                    </p>
+                    <div className="grid grid-cols-3 gap-1 w-fit">
+                      {/* Linha 1: Norte (centro) */}
+                      <div />
+                      {getAllowedDirections(selectedShip).includes(
+                        MoveDirection.NORTH,
+                      ) ? (
+                        <button
+                          onClick={() => handleMoveShip(MoveDirection.NORTH)}
+                          disabled={isMoving}
+                          className="w-10 h-10 rounded-lg bg-cyan-700/40 hover:bg-cyan-600/50 border border-cyan-600/50 text-cyan-200 font-bold text-lg transition-all active:scale-90 disabled:opacity-50"
+                          title="Mover para Norte"
+                        >
+                          ↑
+                        </button>
+                      ) : (
+                        <div />
+                      )}
+                      <div />
+
+                      {/* Linha 2: Oeste (esq) | centro vazio | Leste (dir) */}
+                      {getAllowedDirections(selectedShip).includes(
+                        MoveDirection.WEST,
+                      ) ? (
+                        <button
+                          onClick={() => handleMoveShip(MoveDirection.WEST)}
+                          disabled={isMoving}
+                          className="w-10 h-10 rounded-lg bg-cyan-700/40 hover:bg-cyan-600/50 border border-cyan-600/50 text-cyan-200 font-bold text-lg transition-all active:scale-90 disabled:opacity-50"
+                          title="Mover para Oeste"
+                        >
+                          ←
+                        </button>
+                      ) : (
+                        <div />
+                      )}
+                      <div className="w-10 h-10 rounded-lg bg-slate-700/30 border border-slate-600/30 flex items-center justify-center text-slate-500 text-xs">
+                        🚢
+                      </div>
+                      {getAllowedDirections(selectedShip).includes(
+                        MoveDirection.EAST,
+                      ) ? (
+                        <button
+                          onClick={() => handleMoveShip(MoveDirection.EAST)}
+                          disabled={isMoving}
+                          className="w-10 h-10 rounded-lg bg-cyan-700/40 hover:bg-cyan-600/50 border border-cyan-600/50 text-cyan-200 font-bold text-lg transition-all active:scale-90 disabled:opacity-50"
+                          title="Mover para Leste"
+                        >
+                          →
+                        </button>
+                      ) : (
+                        <div />
+                      )}
+
+                      {/* Linha 3: Sul (centro) */}
+                      <div />
+                      {getAllowedDirections(selectedShip).includes(
+                        MoveDirection.SOUTH,
+                      ) ? (
+                        <button
+                          onClick={() => handleMoveShip(MoveDirection.SOUTH)}
+                          disabled={isMoving}
+                          className="w-10 h-10 rounded-lg bg-cyan-700/40 hover:bg-cyan-600/50 border border-cyan-600/50 text-cyan-200 font-bold text-lg transition-all active:scale-90 disabled:opacity-50"
+                          title="Mover para Sul"
+                        >
+                          ↓
+                        </button>
+                      ) : (
+                        <div />
+                      )}
+                      <div />
+                    </div>
+                  </div>
+                )}
+
+                {isMoving && (
+                  <p className="text-xs text-cyan-400 text-center animate-pulse">
+                    Movendo navio...
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

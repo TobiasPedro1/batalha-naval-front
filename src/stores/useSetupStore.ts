@@ -10,9 +10,9 @@
  *  • No UI / drag-and-drop logic lives here — only data + rules.
  */
 
-import { create } from 'zustand';
-import { ShipType, ShipOrientation } from '@/types/game-enums';
-import { FLEET_CONFIG, GRID_SIZE } from '@/lib/game-rules';
+import { create } from "zustand";
+import { ShipType, ShipOrientation } from "@/types/game-enums";
+import { FLEET_CONFIG, GRID_SIZE } from "@/lib/game-rules";
 
 // ─── Exported Types ──────────────────────────────────────────────────────────
 
@@ -92,7 +92,12 @@ export function hasCollision(
 
   for (const ship of existingShips) {
     if (ship.id === excludeShipId) continue;
-    for (const cell of getShipCells(ship.x, ship.y, ship.size, ship.orientation)) {
+    for (const cell of getShipCells(
+      ship.x,
+      ship.y,
+      ship.size,
+      ship.orientation,
+    )) {
       occupied.add(`${cell.x},${cell.y}`);
     }
   }

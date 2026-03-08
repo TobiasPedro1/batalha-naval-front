@@ -8,10 +8,10 @@
  *  • Global 'R' key listener for rotating the active / selected ship.
  *  • DragOverlay for a semi-transparent ship preview attached to the cursor.
  */
-'use client';
+"use client";
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   DndContext,
   DragOverlay,
@@ -21,22 +21,22 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 
-import { Match, SetupShipPayload } from '@/types/api-responses';
-import { CELL_SIZE, FLEET_CONFIG, GRID_SIZE } from '@/lib/game-rules';
+import { Match, SetupShipPayload } from "@/types/api-responses";
+import { CELL_SIZE, FLEET_CONFIG, GRID_SIZE } from "@/lib/game-rules";
 import {
   useSetupStore,
   type DockShip,
   type PlacedShip,
-} from '@/stores/useSetupStore';
-import { useSetupMatchMutation } from '@/hooks/queries/useMatchMutations';
+} from "@/stores/useSetupStore";
+import { useSetupMatchMutation } from "@/hooks/queries/useMatchMutations";
 
-import { SetupGrid } from '@/components/game/setup/SetupGrid';
-import { DroppableCell } from '@/components/game/setup/DroppableCell';
-import { DraggableShip } from '@/components/game/setup/DraggableShip';
-import { ShipUnit } from '@/components/game/setup/ShipUnit';
-import { Button } from '@/components/ui/Button';
+import { SetupGrid } from "@/components/game/setup/SetupGrid";
+import { DroppableCell } from "@/components/game/setup/DroppableCell";
+import { DraggableShip } from "@/components/game/setup/DraggableShip";
+import { ShipUnit } from "@/components/game/setup/ShipUnit";
+import { Button } from "@/components/ui/Button";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -69,11 +69,11 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
 
   // ── Store ────────────────────────────────────────────────────────────────
   const availableShips = useSetupStore((s) => s.availableShips);
-  const placedShips    = useSetupStore((s) => s.placedShips);
-  const placeShip      = useSetupStore((s) => s.placeShip);
-  const rotateShip     = useSetupStore((s) => s.rotateShip);
-  const removeShip     = useSetupStore((s) => s.removeShip);
-  const resetFleet     = useSetupStore((s) => s.resetFleet);
+  const placedShips = useSetupStore((s) => s.placedShips);
+  const placeShip = useSetupStore((s) => s.placeShip);
+  const rotateShip = useSetupStore((s) => s.rotateShip);
+  const removeShip = useSetupStore((s) => s.removeShip);
+  const resetFleet = useSetupStore((s) => s.resetFleet);
   const allShipsPlaced = useSetupStore((s) => s.allShipsPlaced);
 
   // ── Mutation ─────────────────────────────────────────────────────────────
@@ -113,13 +113,13 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'r' || e.key === 'R') {
+      if (e.key === "r" || e.key === "R") {
         const id = rotationTargetRef.current;
         if (id) rotateShip(id);
       }
     };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [rotateShip]);
 
   // ── Validity highlights for the grid ─────────────────────────────────────
@@ -151,7 +151,9 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
       if (!ok) {
         // Invalid drop — the store rejected it. The ship snaps back because
         // the DragOverlay disappears and the origin copy becomes visible again.
-        console.warn(`Placement rejected for ${shipId} at (${coords.x}, ${coords.y})`);
+        console.warn(
+          `Placement rejected for ${shipId} at (${coords.x}, ${coords.y})`,
+        );
       }
     },
     [placeShip],
@@ -199,7 +201,7 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
 
     try {
       const payload: SetupShipPayload[] = placedShips.map((ship) => ({
-        name: ship.type,          // ShipType enum value — matches backend string
+        name: ship.type, // ShipType enum value — matches backend string
         size: ship.size,
         startX: ship.x,
         startY: ship.y,
@@ -211,16 +213,16 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
       const msg =
         error instanceof Error
           ? error.message
-          : 'Erro desconhecido ao enviar frota.';
+          : "Erro desconhecido ao enviar frota.";
       setErrorMsg(msg);
-      console.error('Erro na sequência de confirmação:', error);
+      console.error("Erro na sequência de confirmação:", error);
     }
   };
 
   // ── Derived ──────────────────────────────────────────────────────────────
   const isPlayerReady = match.player1.isReady || match.player2?.isReady;
-  const isDeploying   = setupMatch.isPending;
-  const canConfirm    = allShipsPlaced() && !isPlayerReady && !isDeploying;
+  const isDeploying = setupMatch.isPending;
+  const canConfirm = allShipsPlaced() && !isPlayerReady && !isDeploying;
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (
@@ -239,12 +241,18 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
             </h1>
             <p className="text-gray-300">
               Arraste os navios para o tabuleiro ou clique para posicionar.
-              Pressione <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-xs font-mono">R</kbd> para girar.
+              Pressione{" "}
+              <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-xs font-mono">
+                R
+              </kbd>{" "}
+              para girar.
             </p>
             {match.player2 && (
               <div className="mt-4 p-2 bg-black/30 inline-block rounded-lg border border-white/10">
                 <span className="text-yellow-400 font-mono">ADVERSÁRIO:</span>
-                <span className="text-white ml-2">{match.player2.username}</span>
+                <span className="text-white ml-2">
+                  {match.player2.username}
+                </span>
                 {match.player2.isReady && (
                   <span className="text-green-400 ml-2">✓ PRONTO</span>
                 )}
@@ -280,10 +288,10 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
                           )
                         }
                         className={
-                          'flex flex-col items-start gap-1 rounded-lg p-3 transition-colors cursor-pointer ' +
+                          "flex flex-col items-start gap-1 rounded-lg p-3 transition-colors cursor-pointer " +
                           (isSelected
-                            ? 'ring-2 ring-naval-action bg-naval-action/10'
-                            : 'bg-naval-bg/40 hover:bg-naval-action/10')
+                            ? "ring-2 ring-naval-action bg-naval-action/10"
+                            : "bg-naval-bg/40 hover:bg-naval-action/10")
                         }
                       >
                         <span className="text-xs font-semibold text-naval-text-primary">
@@ -298,7 +306,11 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
                           type={ship.type}
                           size={ship.size}
                           orientation={ship.orientation}
-                          disabled={!!isPlayerReady || isDeploying || setupMatch.isSuccess}
+                          disabled={
+                            !!isPlayerReady ||
+                            isDeploying ||
+                            setupMatch.isSuccess
+                          }
                         />
                       </div>
                     );
@@ -309,7 +321,9 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
                 <div className="pt-4 border-t border-naval-border space-y-3">
                   {/* Rotate */}
                   <Button
-                    onClick={() => { if (selectedId) rotateShip(selectedId); }}
+                    onClick={() => {
+                      if (selectedId) rotateShip(selectedId);
+                    }}
                     variant="outline"
                     className="w-full"
                     disabled={!selectedId || isDeploying}
@@ -325,7 +339,7 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
                     disabled={!canConfirm}
                     isLoading={isDeploying}
                   >
-                    {isDeploying ? 'Enviando Frota...' : '✓ Zarpar Frota'}
+                    {isDeploying ? "Enviando Frota..." : "✓ Zarpar Frota"}
                   </Button>
 
                   {/* Reset */}
@@ -370,8 +384,8 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
                       className="absolute"
                       style={{
                         left: x * CELL_SIZE,
-                        top:  y * CELL_SIZE,
-                        width:  CELL_SIZE,
+                        top: y * CELL_SIZE,
+                        width: CELL_SIZE,
                         height: CELL_SIZE,
                       }}
                     >
@@ -387,7 +401,7 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
                     className="absolute z-10 pointer-events-auto"
                     style={{
                       left: ship.x * CELL_SIZE,
-                      top:  ship.y * CELL_SIZE,
+                      top: ship.y * CELL_SIZE,
                     }}
                   >
                     <DraggableShip
@@ -395,7 +409,9 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
                       type={ship.type}
                       size={ship.size}
                       orientation={ship.orientation}
-                      disabled={!!isPlayerReady || isDeploying || setupMatch.isSuccess}
+                      disabled={
+                        !!isPlayerReady || isDeploying || setupMatch.isSuccess
+                      }
                     />
                   </div>
                 ))}
@@ -406,7 +422,7 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
           {/* ── Back to lobby ─────────────────────────────────────────── */}
           <div className="mt-12 text-center">
             <Button
-              onClick={() => router.push('/lobby')}
+              onClick={() => router.push("/lobby")}
               variant="ghost"
               className="text-gray-400 hover:text-white transition-colors"
             >

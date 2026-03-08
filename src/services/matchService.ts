@@ -38,11 +38,9 @@ export const matchService = {
     ships: SetupShipPayload[],
   ): Promise<SetupMatchRequest> {
     const payload: SetupMatchRequest = { matchId, ships };
-    const { data } = await api.post<SetupMatchRequest>('/match/setup', payload);
+    const { data } = await api.post<SetupMatchRequest>("/match/setup", payload);
     return data;
   },
-
-
 
   // Listar partidas disponíveis
   async listMatches(): Promise<MatchListItem[]> {

@@ -4,7 +4,7 @@
  * Single source of truth for grid dimensions and fleet composition.
  * No UI or state management logic belongs here.
  */
-import { ShipType } from '@/types/game-enums';
+import { ShipType } from "@/types/game-enums";
 
 // ─── Grid ────────────────────────────────────────────────────────────────────
 
@@ -25,12 +25,20 @@ export interface FleetShipConfig {
 }
 
 export const FLEET_CONFIG: Record<ShipType, FleetShipConfig> = {
-  [ShipType.PORTA_AVIAO_A]:  { size: 6, count: 1, label: 'Porta-Aviões Alpha' },
-  [ShipType.PORTA_AVIAO_B]:  { size: 6, count: 1, label: 'Porta-Aviões Bravo' },
-  [ShipType.NAVIO_GUERRA_A]: { size: 4, count: 1, label: 'Navio de Guerra Alpha' },
-  [ShipType.NAVIO_GUERRA_B]: { size: 4, count: 1, label: 'Navio de Guerra Bravo' },
-  [ShipType.ENCOURACADO]:    { size: 3, count: 1, label: 'Encouraçado' },
-  [ShipType.SUBMARINO]:      { size: 1, count: 1, label: 'Submarino' },
+  [ShipType.PORTA_AVIAO_A]: { size: 6, count: 1, label: "Porta-Aviões Alpha" },
+  [ShipType.PORTA_AVIAO_B]: { size: 6, count: 1, label: "Porta-Aviões Bravo" },
+  [ShipType.NAVIO_GUERRA_A]: {
+    size: 4,
+    count: 1,
+    label: "Navio de Guerra Alpha",
+  },
+  [ShipType.NAVIO_GUERRA_B]: {
+    size: 4,
+    count: 1,
+    label: "Navio de Guerra Bravo",
+  },
+  [ShipType.ENCOURACADO]: { size: 3, count: 1, label: "Encouraçado" },
+  [ShipType.SUBMARINO]: { size: 1, count: 1, label: "Submarino" },
 };
 
 /**

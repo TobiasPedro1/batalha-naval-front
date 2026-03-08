@@ -145,7 +145,7 @@ api.interceptors.response.use(
 );
 
 export const getMatchHistory = async (): Promise<MatchHistoryItem[]> => {
-  const response = await api.get<MatchHistoryItem[]>("/users/history"); 
+  const response = await api.get<MatchHistoryItem[]>("/users/history");
   return response.data;
 };
 

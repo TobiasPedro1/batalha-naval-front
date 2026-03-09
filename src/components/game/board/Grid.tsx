@@ -104,7 +104,7 @@ export const Grid: React.FC<GridProps> = ({
   );
 
   return (
-    <div className="relative p-4 md:p-8 bg-slate-900/50 rounded-xl border border-slate-800 shadow-2xl backdrop-blur-md select-none inline-block">
+    <div className="relative p-2 sm:p-4 md:p-8 bg-slate-900/50 rounded-xl border border-slate-800 shadow-2xl backdrop-blur-md select-none inline-block">
       <div>
         {/* Column letter headers */}
         <div className="flex">

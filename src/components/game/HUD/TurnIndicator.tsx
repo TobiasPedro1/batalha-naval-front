@@ -34,7 +34,7 @@ export const TurnIndicator: React.FC<TurnIndicatorProps> = ({
     <div className="space-y-2">
       <div
         className={cn(
-          "px-6 py-3 rounded-lg text-center font-bold text-lg transition-all relative overflow-hidden",
+          "px-3 sm:px-6 py-2 sm:py-3 rounded-lg text-center font-bold text-sm sm:text-lg transition-all relative overflow-hidden",
           isYourTurn
             ? isCritical
               ? "bg-red-600 text-white animate-pulse"

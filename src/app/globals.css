@@ -198,6 +198,26 @@
   }
 }
 
+/* ═══════ Responsive Base Adjustments ═══════ */
+
+@media (max-width: 639px) {
+  :root {
+    --font-size: 14px;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+  :root {
+    --font-size: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --font-size: 16px;
+  }
+}
+
 @keyframes cell-miss-splash {
   0% {
     transform: scale(1);

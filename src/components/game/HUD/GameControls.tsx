@@ -22,7 +22,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
   confirmLabel = "Confirmar",
 }) => {
   return (
-    <div className="flex gap-3 flex-wrap">
+    <div className="flex gap-2 sm:gap-3 flex-wrap justify-center">
       {onRotate && (
         <Button onClick={onRotate} disabled={!canRotate} variant="outline">
           🔄 Girar Navio

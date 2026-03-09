@@ -32,18 +32,18 @@ export default function LobbyPage() {
   const router = useRouter();
 
   return (
-    <div className="display-flex max-w-100vw mx-auto  ">
+    <div className="w-full max-w-full mx-auto">
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold text-white tracking-tight">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
           Centro de Comando
         </h1>
       </div>
 
-      {/* Main Grid Layout - 2 columns on desktop, 1 on mobile */}
-      <div className="flex center space-evenly gap-6 ">
+      {/* Main Grid Layout - 1 column on mobile, 2 on md, 3 on lg */}
+      <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
         {/* Left Column - User Stats */}
-        <div className="span-4 space-y-6">
+        <div className="w-full lg:w-1/3 space-y-4 sm:space-y-6">
           <UserStatsCard />
 
           {/* Quick Actions */}
@@ -75,15 +75,14 @@ export default function LobbyPage() {
           </Card>
         </div>
 
-        {/* Right Column - Battle Station */}
-        <div className="display-flex center gap-10">
-          {/* Section Header */}
+        {/* Center Column - Battle Station */}
+        <div className="w-full lg:flex-1 space-y-4 sm:space-y-6">
           {/* Game Mode Selector */}
           <GameModeSelector />
-          {/* Available Matches List */}
         </div>
-        <div className="display-flex center h-full ">
-          <Leaderboard></Leaderboard>
+        {/* Right Column - Leaderboard */}
+        <div className="w-full lg:w-80 xl:w-96">
+          <Leaderboard />
         </div>
       </div>
     </div>

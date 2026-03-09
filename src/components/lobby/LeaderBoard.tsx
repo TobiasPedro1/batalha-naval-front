@@ -72,7 +72,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
   return (
     <div
       onClick={() => router.push(`/profile/${userId}`)}
-      className={`flex p-2 gap-3 m-auto rounded-2xl border cursor-pointer transition-transform hover:scale-[1.02] hover:shadow-md ${
+      className={`flex p-2 gap-2 sm:gap-3 m-auto rounded-2xl border cursor-pointer transition-transform hover:scale-[1.02] hover:shadow-md ${
         // <-- Efeitos de hover e cursor
         isTopThree
           ? "bg-naval-action/10 border-naval-action/30 shadow-[inset_0_0_10px_rgba(var(--naval-action-rgb),0.1)]"
@@ -81,7 +81,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
     >
       {/* Rank Position Badge */}
       <div
-        className={`flex items-center justify-center w-12 h-12 rounded-2xl font-bold text-m 
+        className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-2xl font-bold text-sm sm:text-base 
       ${
         isTopThree ? rankColors[rankNumber - 1] : "bg-slate-800 text-slate-500"
       }`}
@@ -89,7 +89,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
         {rankNumber}
       </div>
       <div
-        className={`h-10 w-10 gap-2 ${
+        className={`h-8 w-8 sm:h-10 sm:w-10 gap-2 flex-shrink-0 ${
           rankNumber == 1
             ? " border-2 border-amber-500"
             : "border-2 border-slate-700"
@@ -115,7 +115,9 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
           >
             {username}
           </span>
-          <span className="font-mono text-cyan-400 font-bold">{points}PTS</span>
+          <span className="font-mono text-xs sm:text-sm text-cyan-400 font-bold">
+            {points}PTS
+          </span>
         </div>
         <div className="flex items-center gap-2 mt-1 text-[10px] text-slate-400">
           <span className="flex items-center gap-1 text-amber-500/80 ">
@@ -159,7 +161,7 @@ export const Leaderboard: React.FC = () => {
   }
 
   return (
-    <Card className="border-slate-800 bg-slate-900/50 rounded-2xl backdrop-blur-sm h-full flex flex-col min-w-2xs">
+    <Card className="border-slate-800 bg-slate-900/50 rounded-2xl backdrop-blur-sm h-full flex flex-col min-w-0">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-amber-400">

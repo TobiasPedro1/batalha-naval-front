@@ -78,21 +78,21 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-3 sm:p-4">
       <div className="relative w-full max-w-md">
         <div className="relative backdrop-blur-xl bg-slate-900/40 border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden">
-          <div className="p-8 space-y-6">
-            <div className="text-center space-y-4">
+          <div className="p-5 sm:p-8 space-y-5 sm:space-y-6">
+            <div className="text-center space-y-3 sm:space-y-4">
               <div className="flex justify-center">
                 <div className="relative">
                   <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full"></div>
-                  <div className="relative bg-slate-800/50 p-4 rounded-2xl border border-cyan-400/30">
-                    <Anchor className="h-12 w-12 text-cyan-400" />
+                  <div className="relative bg-slate-800/50 p-3 sm:p-4 rounded-2xl border border-cyan-400/30">
+                    <Anchor className="h-10 w-10 sm:h-12 sm:w-12 text-cyan-400" />
                   </div>
                 </div>
               </div>
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-lg">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-lg">
                   Batalha Naval
                 </h1>
                 <p className="text-slate-400 text-sm">

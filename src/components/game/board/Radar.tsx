@@ -40,8 +40,8 @@ export const Radar: React.FC<RadarProps> = ({
   };
 
   return (
-    <div className=" flex-col items-center">
-      <h3 className="text-xl flex gap-2 items-center align-center justify-center font-bold mb-4 text-cyan-400 uppercase tracking-widest">
+    <div className="flex-col items-center">
+      <h3 className="text-base sm:text-xl flex gap-2 items-center align-center justify-center font-bold mb-3 sm:mb-4 text-cyan-400 uppercase tracking-widest">
         <Zap></Zap>
         <span>Radar do Oponente</span>
       </h3>

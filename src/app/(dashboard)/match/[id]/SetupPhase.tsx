@@ -252,13 +252,13 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div className="flex flex-col items-center justify-center min-h-[80vh] w-full max-w-6xl mx-auto gap-8 p-4 animate-in fade-in duration-500">
+      <div className="flex flex-col items-center justify-center min-h-[80vh] w-full max-w-6xl mx-auto gap-4 sm:gap-6 md:gap-8 p-2 sm:p-4 animate-in fade-in duration-500">
         {/* ── Header ───────────────────────────────────────────────── */}
         <div className="text-center space-y-2">
-          <h2 className="text-3xl font-bold text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
             Posicione Sua Frota
           </h2>
-          <p className="text-slate-400">
+          <p className="text-sm sm:text-base text-slate-400">
             Arraste os navios para o tabuleiro ou clique para posicionar.
             Pressione{" "}
             <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-xs font-mono">
@@ -277,12 +277,12 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
           )}
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 w-full">
-          {/* ── Dock (left sidebar) ───────────────────────────────── */}
-          <div className="w-full lg:w-80 shrink-0 bg-slate-900/80 border border-slate-800 backdrop-blur-sm rounded-xl p-6 flex flex-col gap-6 h-fit">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 md:gap-8 w-full">
+          {/* ── Dock (left sidebar) ─────────────────────────── */}
+          <div className="w-full lg:w-80 shrink-0 bg-slate-900/80 border border-slate-800 backdrop-blur-sm rounded-xl p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 h-fit">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-slate-200 uppercase tracking-widest flex items-center gap-2">
-                <Anchor className="w-5 h-5" />
+              <h3 className="text-base sm:text-xl font-bold text-slate-200 uppercase tracking-widest flex items-center gap-2">
+                <Anchor className="w-4 h-4 sm:w-5 sm:h-5" />
                 Porto de Guerra
               </h3>
             </div>
@@ -431,7 +431,7 @@ export default function SetupPhase({ match }: SetupPhaseProps) {
           </div>
 
           {/* ── Board ──────────────────────────────────────────────── */}
-          <div ref={boardRef} className="flex-1 min-w-0">
+          <div ref={boardRef} className="flex-1 min-w-0 overflow-x-auto">
             <div
               style={{
                 width: GRID_NATURAL * gridScale,

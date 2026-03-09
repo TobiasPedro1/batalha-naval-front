@@ -43,13 +43,13 @@ const StatItem: React.FC<StatItemProps> = ({
   icon,
   highlight,
 }) => (
-  <div className="bg-slate-800/30 p-3 rounded-lg border border-slate-700/30 flex flex-col items-center justify-center hover:bg-slate-800/50 transition-colors">
-    <span className="w-5 h-5 text-amber-400 mb-1">{icon}</span>
-    <div className="text-2xl font-bold text-white">
+  <div className="bg-slate-800/30 p-2 sm:p-3 rounded-lg border border-slate-700/30 flex flex-col items-center justify-center hover:bg-slate-800/50 transition-colors">
+    <span className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 mb-1">{icon}</span>
+    <div className="text-xl sm:text-2xl font-bold text-white">
       <p className="items-center justify-center text-center">{label}</p>
     </div>
     <div
-      className={`text-lg font-bold  ${highlight ? "text-naval-action" : "text-white"}`}
+      className={`text-base sm:text-lg font-bold  ${highlight ? "text-naval-action" : "text-white"}`}
     >
       <p className="items-center justify-center text-center">{value}</p>
     </div>
@@ -131,16 +131,16 @@ export const UserStatsCard: React.FC = () => {
       <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
         <Trophy className="w-32 h-32 text-cyan-500" />
       </div>
-      <CardHeader className="py-8   ">
+      <CardHeader className="py-4 sm:py-8">
         <CardTitle className="flex items-center gap-2 text-cyan-400">
           <Medal className="w-5 h-5" /> Estatísticas
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 relative z-10">
         {/* User Info & Rank */}
-        <div className="flex items-center gap-4 bg-slate-800/50 p-0 rounded-xl border border-slate-700/50">
+        <div className="flex items-center gap-3 sm:gap-4 bg-slate-800/50 p-0 rounded-xl border border-slate-700/50">
           <div className="relative">
-            <div className="h-20 w-20 border-2 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+            <div className="h-16 w-16 sm:h-20 sm:w-20 border-2 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
               <Image
                 src="/mortyy.jpg"
                 alt="@dimas"
@@ -154,8 +154,10 @@ export const UserStatsCard: React.FC = () => {
             </div>
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white">{user.username}</h3>
-            <div className="flex items-center gap-1 text-amber-400 text-sm font-medium">
+            <h3 className="text-base sm:text-xl font-bold text-white">
+              {user.username}
+            </h3>
+            <div className="flex items-center gap-1 text-amber-400 text-xs sm:text-sm font-medium">
               <span>{rank.title}</span>
               {/*<span className="text-xs">{rank.icon}</span> */}
             </div>

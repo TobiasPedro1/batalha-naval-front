@@ -37,8 +37,8 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 px-1 sm:px-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
         <Button
           variant="outline"
           className="bg-slate-800 border-slate-700 hover:bg-slate-700 text-white"
@@ -47,7 +47,9 @@ export default function HistoryPage() {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
         </Button>
-        <h1 className="text-3xl font-bold text-white">Histórico de Batalhas</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white">
+          Histórico de Batalhas
+        </h1>
       </div>
 
       <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm">
@@ -77,23 +79,23 @@ export default function HistoryPage() {
             {history?.map((match) => (
               <div
                 key={match.id}
-                className="flex items-center justify-between p-4 rounded-lg border border-slate-700 bg-slate-800/50 hover:bg-slate-800 transition-colors"
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-lg border border-slate-700 bg-slate-800/50 hover:bg-slate-800 transition-colors gap-3 sm:gap-4"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
                   <div
-                    className={`p-3 rounded-full border ${getResultColor(match.result)}`}
+                    className={`p-2 sm:p-3 rounded-full border flex-shrink-0 ${getResultColor(match.result)}`}
                   >
                     {getResultIcon(match.result)}
                   </div>
-                  <div>
-                    <h3 className="font-bold text-white text-lg">
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-white text-base sm:text-lg truncate">
                       vs {match.opponentName}
                     </h3>
-                    <div className="flex items-center gap-3 text-sm text-slate-400">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-400">
                       <span className="bg-slate-700/50 px-2 py-0.5 rounded text-cyan-400 text-xs font-semibold uppercase">
                         {match.gameMode}
                       </span>
-                      <span>
+                      <span className="truncate">
                         {format(
                           parseISO(match.playedAt),
                           "dd 'de' MMMM 'às' HH:mm",
@@ -105,8 +107,8 @@ export default function HistoryPage() {
                 </div>
 
                 {match.duration && (
-                  <div className="flex items-center text-slate-400 text-sm bg-slate-900/50 px-3 py-1.5 rounded-md border border-slate-800">
-                    <Clock className="w-4 h-4 mr-1.5 text-cyan-500" />
+                  <div className="flex items-center text-slate-400 text-xs sm:text-sm bg-slate-900/50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md border border-slate-800 self-start sm:self-auto flex-shrink-0">
+                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 text-cyan-500" />
                     {match.duration.substring(0, 8)}{" "}
                     {/* Formata o TimeSpan para HH:mm:ss */}
                   </div>

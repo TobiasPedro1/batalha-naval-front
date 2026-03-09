@@ -401,15 +401,15 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 p-4 md:p-8 relative">
+    <div className="min-h-screen bg-slate-950 p-2 sm:p-4 md:p-8 relative">
       {/* Toast Container */}
       <ToastContainer messages={messages} onRemove={removeToast} />
 
       {/* Banner "Navio Afundado!" overlay */}
       {sunkBanner && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-          <div className="animate-sunk-banner bg-gradient-to-r from-orange-600 to-red-700 text-white px-12 py-6 rounded-2xl shadow-2xl border-4 border-orange-400">
-            <div className="text-5xl font-black tracking-wider text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none px-4">
+          <div className="animate-sunk-banner bg-gradient-to-r from-orange-600 to-red-700 text-white px-6 sm:px-12 py-4 sm:py-6 rounded-2xl shadow-2xl border-4 border-orange-400">
+            <div className="text-2xl sm:text-4xl md:text-5xl font-black tracking-wider text-center">
               🔥 {sunkBanner} 🔥
             </div>
           </div>
@@ -418,7 +418,7 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
 
       <div className="max-w-7xl mx-auto">
         {/* Header com indicador de turno */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-6 md:mb-8">
           <TurnIndicator
             isYourTurn={isMyTurn && !isFinished}
             playerName={match.player1.username}
@@ -431,17 +431,17 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
 
           {/* Stats compactas */}
           {match.stats && (
-            <div className="flex justify-center gap-6 mt-4">
-              <div className="px-4 py-1.5 flex items-center gap-2 rounded-full bg-emerald-900/30 border border-emerald-700/40 text-emerald-400 text-sm font-mono">
-                <Target className="w-4 h-4" />
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mt-3 sm:mt-4">
+              <div className="px-3 sm:px-4 py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2 rounded-full bg-emerald-900/30 border border-emerald-700/40 text-emerald-400 text-xs sm:text-sm font-mono">
+                <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>{match.stats.myHits} acertos</span>
               </div>
-              <div className="px-4 py-1.5 flex items-center gap-2 rounded-full bg-amber-900/30 border border-amber-700/40 text-amber-400 text-sm font-mono">
-                <Zap className="w-4 h-4" />
+              <div className="px-3 sm:px-4 py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2 rounded-full bg-amber-900/30 border border-amber-700/40 text-amber-400 text-xs sm:text-sm font-mono">
+                <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>{match.stats.myStreak} sequência</span>
               </div>
-              <div className="px-4 py-1.5 rounded-full  flex items-center gap-2 bg-slate-800/60 border border-slate-700/40 text-slate-400 text-sm font-mono">
-                <Wind className="w-4 h-4"></Wind>
+              <div className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full flex items-center gap-1.5 sm:gap-2 bg-slate-800/60 border border-slate-700/40 text-slate-400 text-xs sm:text-sm font-mono">
+                <Wind className="w-3.5 h-3.5 sm:w-4 sm:h-4"></Wind>
                 <span>{match.stats.myMisses} erros</span>
               </div>
             </div>
@@ -449,8 +449,8 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
 
           {/* Tela de Fim de Jogo */}
           {isFinished && (
-            <div className="mt-6 text-center">
-              <div className="text-5xl font-black mb-4 animate-bounce">
+            <div className="mt-4 sm:mt-6 text-center">
+              <div className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 sm:mb-4 animate-bounce">
                 {whoIsWinner(match)}
               </div>
               <Button onClick={() => router.push("/lobby")} size="lg">
@@ -461,9 +461,9 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
         </div>
 
         {/* Grid lado a lado */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 xl:gap-8 mb-4 sm:mb-6 md:mb-8">
           {/* Radar do Oponente (ataque) */}
-          <div className="flex justify-center">
+          <div className="flex justify-center overflow-x-auto">
             <Radar
               opponentGrid={opponentGrid}
               onAttack={handleAttack}
@@ -475,8 +475,8 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
           </div>
 
           {/* Meu Tabuleiro + Painel de Movimento */}
-          <div className="flex flex-col items-center">
-            <h3 className="text-xl flex items-center align-center justify-center gap-2 font-bold mb-4 text-slate-300 uppercase tracking-widest">
+          <div className="flex flex-col items-center overflow-x-auto">
+            <h3 className="text-base sm:text-xl flex items-center align-center justify-center gap-2 font-bold mb-3 sm:mb-4 text-slate-300 uppercase tracking-widest">
               <Anchor />
               <span>SEU TABULEIRO</span>
             </h3>
@@ -643,7 +643,7 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
         </div>
 
         {/* Status das Frotas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6 items-start">
           <FleetStatus ships={myShips} title="Sua Frota" />
           <FleetStatus
             ships={opponentShips}

@@ -39,8 +39,10 @@ export const FleetStatus: React.FC<FleetStatusProps> = ({
   };
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 shadow-md h-full flex flex-col">
-      <h3 className="text-lg font-bold mb-3 text-white">{title}</h3>
+    <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 sm:p-4 shadow-md h-full flex flex-col">
+      <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-white">
+        {title}
+      </h3>
 
       <div className="mb-4">
         <div className="flex justify-between text-sm mb-1">

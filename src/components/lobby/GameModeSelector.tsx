@@ -20,7 +20,6 @@ import { Input } from "@/components/ui/Input";
 import {
   useCreateMatchMutation,
   useJoinMatchMutation,
-  useCancelMatchMutation,
 } from "@/hooks/queries/useMatchMutations";
 import {
   useMatchListQuery,
@@ -114,7 +113,6 @@ export const GameModeSelector: React.FC = () => {
   const createMatch = useCreateMatchMutation();
   const cancelCampaign = useCancelCampaignMutation();
   const joinMatch = useJoinMatchMutation();
-  const cancelMatch = useCancelMatchMutation();
   const { data: matches, isLoading: isLoadingMatches } = useMatchListQuery();
   const { data: invites } = useInvitesQuery();
 
@@ -440,10 +438,10 @@ export const GameModeSelector: React.FC = () => {
 
           {/* Difficulty Selection */}
           <div className="space-y-1">
-            <p className="text-sm font-medium text-slate-300 ">
+            <p className="text-sm font-medium text-slate-300">
               Selecione a Dificuldade
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {difficultyOptions.map((option) => (
                 <button
                   key={option.value}
@@ -600,7 +598,7 @@ export const GameModeSelector: React.FC = () => {
             </div>
             <div className="relative flex justify-center">
               <span className="bg-slate-900 px-3 text-xs text-slate-500 uppercase tracking-wider">
-                Convites
+                Ou foi convidado?
               </span>
             </div>
           </div>
@@ -646,7 +644,6 @@ export const GameModeSelector: React.FC = () => {
                         </span>
                       </p>
                     </div>
-                    {/* Botão de Aceitar Convite */}
                     <Button
                       size="sm"
                       className="ml-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
@@ -664,63 +661,46 @@ export const GameModeSelector: React.FC = () => {
                       <Gamepad2 className="w-4 h-4 mr-1" />
                       Aceitar
                     </Button>
-
-                    {/* Botão de Cancelar Convite */}
-                    <Button
-                      size="sm"
-                      isLoading={cancelMatch.isPending} //
-                      className="ml-3 bg-red-500 hover:bg-red-700 text-white font-bold"
-                      onClick={async () => {
-                        try {
-                          await cancelMatch.mutateAsync(invite.matchId);
-                        } catch (error) {
-                          console.error("Falha ao recusar o convite", error);
-                        }
-                      }}
-                    >
-                      <XCircle className="w-4 h-4 mr-1" />
-                      Cancelar
-                    </Button>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/*/!* Accept Invite — Match ID *!/*/}
-          {/*<div className="space-y-2">*/}
-          {/*  <label className="text-sm font-medium text-slate-300 flex items-center gap-1.5">*/}
-          {/*    <Link2 className="w-3.5 h-3.5" />*/}
-          {/*    Aceitar Convite*/}
-          {/*  </label>*/}
-          {/*  <div className="flex gap-2">*/}
-          {/*    <Input*/}
-          {/*      type="text"*/}
-          {/*      placeholder="Cole o ID da partida recebido..."*/}
-          {/*      value={inviteMatchId}*/}
-          {/*      onChange={(e) => {*/}
-          {/*        setInviteMatchId(e.target.value);*/}
-          {/*        setInviteError("");*/}
-          {/*      }}*/}
-          {/*      error={!!inviteError}*/}
-          {/*      errorMessage={inviteError}*/}
-          {/*    />*/}
-          {/*  </div>*/}
-          {/*  <p className="text-xs text-slate-500">*/}
-          {/*    Recebeu um convite? Cole o ID da partida aqui para entrar e*/}
-          {/*    posicionar sua frota.*/}
-          {/*  </p>*/}
-          {/*</div>*/}
+          {/* Accept Invite — Match ID */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-300 flex items-center gap-1.5">
+              <Link2 className="w-3.5 h-3.5" />
+              Aceitar Convite
+            </label>
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="Cole o ID da partida recebido..."
+                value={inviteMatchId}
+                onChange={(e) => {
+                  setInviteMatchId(e.target.value);
+                  setInviteError("");
+                }}
+                error={!!inviteError}
+                errorMessage={inviteError}
+              />
+            </div>
+            <p className="text-xs text-slate-500">
+              Recebeu um convite? Cole o ID da partida aqui para entrar e
+              posicionar sua frota.
+            </p>
+          </div>
 
-          {/*<Button*/}
-          {/*  className="w-full rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold h-12 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all hover:scale-[1.01] active:scale-[0.99]"*/}
-          {/*  onClick={handleAcceptInvite}*/}
-          {/*  disabled={!inviteMatchId.trim()}*/}
-          {/*  size="lg"*/}
-          {/*>*/}
-          {/*  <Gamepad2 className="mr-2 h-5 w-5" />*/}
-          {/*  Entrar na Partida*/}
-          {/*</Button>*/}
+          <Button
+            className="w-full rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold h-12 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all hover:scale-[1.01] active:scale-[0.99]"
+            onClick={handleAcceptInvite}
+            disabled={!inviteMatchId.trim()}
+            size="lg"
+          >
+            <Gamepad2 className="mr-2 h-5 w-5" />
+            Entrar na Partida
+          </Button>
         </CardContent>
       </Card>
       {/*<Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm min-h-[300px] flex flex-col">

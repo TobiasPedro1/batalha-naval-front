@@ -45,15 +45,16 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen ">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur ">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-8">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4 sm:gap-8">
             <Link
               href="/lobby"
-              className="flex items-center gap-2 text-xl font-bold text-slate-100 transition-colors hover:text-cyan-400"
+              className="flex items-center gap-2 text-base sm:text-xl font-bold text-slate-100 transition-colors hover:text-cyan-400"
             >
-              <Anchor className="h-8 w-8 text-cyan-400"></Anchor>
-              <span>Batalha Naval</span>
+              <Anchor className="h-6 w-6 sm:h-8 sm:w-8 text-cyan-400"></Anchor>
+              <span className="hidden sm:inline">Batalha Naval</span>
+              <span className="sm:hidden">BN</span>
             </Link>
           </div>
 
@@ -113,7 +114,9 @@ export default function DashboardLayout({
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">{children}</main>
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        {children}
+      </main>
     </div>
   );
 }

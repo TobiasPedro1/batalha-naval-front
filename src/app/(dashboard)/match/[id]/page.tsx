@@ -50,18 +50,22 @@ export default function MatchPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-900 text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mr-4"></div>
-        <span>Sincronizando com o Quartel General...</span>
+      <div className="flex h-screen items-center justify-center bg-gray-900 text-white px-4">
+        <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2 border-blue-500 mr-3 sm:mr-4"></div>
+        <span className="text-sm sm:text-base">
+          Sincronizando com o Quartel General...
+        </span>
       </div>
     );
   }
 
   if (error || !gameState) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-gray-900 text-white gap-4">
-        <h2 className="text-xl text-red-500">Peidou!</h2>
-        <p className="text-gray-400">Seu adversário não tankou e quitou.</p>
+      <div className="flex h-screen flex-col items-center justify-center bg-gray-900 text-white gap-4 px-4 text-center">
+        <h2 className="text-lg sm:text-xl text-red-500">Peidou!</h2>
+        <p className="text-sm sm:text-base text-gray-400">
+          Seu adversário não tankou e quitou.
+        </p>
         <button
           onClick={() => router.push("/lobby")}
           className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 transition"

@@ -73,20 +73,20 @@ const StatCard: React.FC<StatCardProps> = ({
 
   return (
     <div
-      className={`relative p-5 rounded-2xl border ${bgClasses[color]} backdrop-blur-sm`}
+      className={`relative p-3 sm:p-5 rounded-2xl border ${bgClasses[color]} backdrop-blur-sm`}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center ${iconBgClasses[color]}`}
+          className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${iconBgClasses[color]}`}
         >
           {icon}
         </div>
-        <p className="text-xs uppercase tracking-wider font-semibold text-slate-400">
+        <p className="text-[10px] sm:text-xs uppercase tracking-wider font-semibold text-slate-400">
           {label}
         </p>
       </div>
-      <p className="text-4xl font-bold text-white mb-1">{value}</p>
-      {trend && <p className="text-sm text-slate-400">{trend}</p>}
+      <p className="text-2xl sm:text-4xl font-bold text-white mb-1">{value}</p>
+      {trend && <p className="text-xs sm:text-sm text-slate-400">{trend}</p>}
     </div>
   );
 };
@@ -155,32 +155,32 @@ export default function ProfilePage() {
   const unlockedCount = getUnlockedMedalCount(medals);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 animate-in fade-in duration-300">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8 animate-in fade-in duration-300">
       {/* Page Header */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <Button
           variant="ghost"
           onClick={() => router.push("/lobby")}
-          className="mb-4 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 -ml-2"
+          className="mb-3 sm:mb-4 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 -ml-2"
         >
           ← Voltar ao Lobby
         </Button>
         <div>
-          <h1 className="text-4xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
             Meu Perfil
           </h1>
-          <p className="text-cyan-400/70 mt-2 text-lg">
+          <p className="text-cyan-400/70 mt-1 sm:mt-2 text-base sm:text-lg">
             Sua carreira e conquistas
           </p>
         </div>
       </div>
 
       {/* Player Identity Card - ATUALIZADO IGUAL AO [ID] */}
-      <Card className="mb-6 bg-slate-900/50 border-slate-800 rounded-2xl overflow-hidden">
-        <CardContent className="p-6">
+      <Card className="mb-4 sm:mb-6 bg-slate-900/50 border-slate-800 rounded-2xl overflow-hidden">
+        <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
-              <div className="w-24 h-24 rounded-full overflow-hidden border-[3px] border-cyan-400 shadow-lg shadow-cyan-500/20 flex-shrink-0">
+              <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full overflow-hidden border-[3px] border-cyan-400 shadow-lg shadow-cyan-500/20 flex-shrink-0">
                 <Image
                   src="/mortyy.jpg"
                   alt="Avatar"
@@ -191,7 +191,7 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <h2 className="text-2xl font-bold text-white mb-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">
                   {user.username}
                 </h2>
                 <div className="flex flex-wrap items-center gap-2">
@@ -239,7 +239,7 @@ export default function ProfilePage() {
       </Card>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
         <StatCard
           label="Vitórias"
           value={user.wins}
@@ -264,7 +264,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Detailed Stats - MANTIDO DO ORIGINAL POR SER O PRÓPRIO PERFIL */}
-      <Card className="mb-6 bg-slate-900/50 border-slate-800 rounded-2xl overflow-hidden">
+      <Card className="mb-4 sm:mb-6 bg-slate-900/50 border-slate-800 rounded-2xl overflow-hidden">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-cyan-500/15 flex items-center justify-center">
@@ -301,7 +301,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Additional Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-800/50">
                 <p className="text-xs text-cyan-400/60 mb-2">
                   Vitórias Consecutivas
@@ -387,7 +387,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Medal Grid */}
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 justify-items-center">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 sm:gap-4 justify-items-center">
                 {sortedMedals.map((medal) => (
                   <MedalBadge key={medal.id} medal={medal} size="md" />
                 ))}

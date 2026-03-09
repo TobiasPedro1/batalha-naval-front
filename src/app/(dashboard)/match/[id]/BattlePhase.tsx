@@ -637,13 +637,9 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
         </div>
 
         {/* Status das Frotas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {myShips.length > 0 && (
-            <FleetStatus ships={myShips} title="Sua Frota" />
-          )}
-          {opponentShips.length > 0 && (
-            <FleetStatus ships={opponentShips} title="Frota do Oponente" />
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 items-start">
+          <FleetStatus ships={myShips} title="Sua Frota" />
+          <FleetStatus ships={opponentShips} title="Frota do Oponente" isOpponentFleet={true} />
         </div>
 
         {/* Controles */}

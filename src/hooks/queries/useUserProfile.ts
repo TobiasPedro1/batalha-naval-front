@@ -7,6 +7,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { authService } from "@/services/authService";
 import { LeaderBoardResponse, UserDetails } from "@/types/api-responses";
+import { getPlayerProfileById} from "@/services/api";
 
 /**
  * Query key for user profile
@@ -74,4 +75,13 @@ export const getUserRank = (wins: number): { title: string; icon: string } => {
 export const getWinRate = (wins: number, gamesPlayed: number): string => {
   if (gamesPlayed === 0) return "0%";
   return `${Math.round((wins / gamesPlayed) * 100)}%`;
+};
+
+export const usePlayerProfile = (userId: string | null) => {
+  return useQuery({
+    queryKey: ["playerProfile", userId],
+    queryFn: () => getPlayerProfileById(userId!),
+    enabled: !!userId, // Só executa a query se tivermos um ID válido (quando o modal abrir)
+    staleTime: 1000 * 60 * 5, // Mantém o dado em cache por 5 minutos para evitar spam na API
+  });
 };

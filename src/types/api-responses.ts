@@ -18,7 +18,7 @@ export interface UserDetails extends UserProfile {
   gamesPlayed: number;
 }
 export interface LeaderBoardResponse {
-  userId: number;
+  userId: string;
   username: string;
   points: number;
   wins: number;

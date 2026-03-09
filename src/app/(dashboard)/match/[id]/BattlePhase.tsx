@@ -286,12 +286,10 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
         setHasMovedThisTurn(false);
         setSelectedShipId(null);
 
-        // 6. Game Over — se EU atirei e o jogo acabou, EU venci.
-        //    Marca a ref IMEDIATAMENTE para que o banner e o useEffect
-        //    de game-over usem essa info como fallback.
+        // 6. Game Over — Se a API diz que acabou, forçamos o React Query
+        // a buscar o estado final do tabuleiro instantaneamente!
         if (result.isGameOver) {
-          setDidIWinByShooting(true);
-          // Invalida cache de perfil e leaderboard para refletir novo resultado
+          queryClient.invalidateQueries({ queryKey: ["match", match.id] });
           queryClient.invalidateQueries({ queryKey: ["userProfile"] });
           queryClient.invalidateQueries({ queryKey: ["leaderBoard"] });
         }
@@ -326,6 +324,7 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
       addToast,
       queryClient,
       resetTimer,
+      match.id,
     ],
   );
 
@@ -341,38 +340,31 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
     }
   };
 
-  // // Detecta game over via polling (quando o oponente vence, timeout, ou meu tiro vencedor)
-  // // Usa resolvedIsWinner que combina match.isWinner (parent) + didIWinByShootingRef (fallback)
-  // const gameOverHandledRef = useRef(false);
-  // useEffect(() => {
-  //   if (isFinished && !gameOverHandledRef.current) {
-  //     gameOverHandledRef.current = true;
-  //
-  //     // Invalida cache de perfil e leaderboard para manter stats atualizados
-  //     queryClient.invalidateQueries({ queryKey: ["userProfile"] });
-  //     queryClient.invalidateQueries({ queryKey: ["leaderBoard"] });
-  //
-  //     if (resolvedIsWinner === true) {
-  //       playVictory();
-  //       addToast("Você venceu a batalha!", "victory", 5000);
-  //     } else if (resolvedIsWinner === false) {
-  //       addToast("Você perdeu a batalha.", "defeat", 5000);
-  //     }
-  //     // Se resolvedIsWinner === null, não mostra toast (indeterminado, raro)
-  //   }
-  // }, [isFinished, resolvedIsWinner, addToast, playVictory, queryClient]);
-
-  // Detecta game over via polling (quando o oponente vence, timeout, ou meu tiro vencedor)
+  // Detecta game over via polling (quando o oponente vence, timeout, ou derrota para IA)
   const gameOverHandledRef = useRef(false);
   useEffect(() => {
     if (isFinished && !gameOverHandledRef.current) {
       gameOverHandledRef.current = true;
 
-      // Invalida cache de perfil e leaderboard para manter stats atualizados
+      // Invalida caches para manter stats atualizados
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
       queryClient.invalidateQueries({ queryKey: ["leaderBoard"] });
 
-      if (resolvedIsWinner === true) {
+      // Verificação INCONTESTÁVEL baseada no estado físico dos navios
+      const p1StatusIsDefeated =
+        match.player1Board.ships.length === 6 &&
+        match.player1Board.ships.every((ship) => ship.isSunk);
+
+      const p2StatusIsDefeated =
+        match.player2Board.ships.length === 6 &&
+        match.player2Board.ships.every((ship) => ship.isSunk);
+
+      // Você ganha se o backend confirmou OU se a frota inimiga foi obliterada
+      const isActualWinner = match.isWinner === true || p2StatusIsDefeated;
+      // Você perde se o backend confirmou OU se a sua frota foi obliterada (IA ganhou)
+      const isActualLoser = match.isWinner === false || p1StatusIsDefeated;
+
+      if (isActualWinner && !isActualLoser) {
         setTimeout(() => {
           playVictory();
           addToast("Você venceu a batalha!", "victory", 5000);
@@ -384,7 +376,15 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
         }, 1000);
       }
     }
-  }, [isFinished, resolvedIsWinner, addToast, playVictory, queryClient]);
+  }, [
+    isFinished,
+    match.isWinner,
+    match.player1Board.ships,
+    match.player2Board.ships,
+    addToast,
+    playVictory,
+    queryClient,
+  ]);
 
   const whoIsWinner = (match: AdaptedMatch) => {
     const p1StatusIsDefeated =

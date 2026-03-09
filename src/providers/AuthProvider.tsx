@@ -55,11 +55,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUsername(data.username);
     setToken(data.accessToken);
     setRefreshToken(data.refreshToken);
-    console.log("Token set in localStorage (AuthProvider):", data.accessToken);
-    console.log(
-      "RefreshToken set in localStorage (AuthProvider):",
-      data.refreshToken,
-    );
+    // console.log("Token set in localStorage (AuthProvider):", data.accessToken);
+    // console.log("RefreshToken set in localStorage (AuthProvider):", data.refreshToken,);
     document.cookie = `auth-token=${data.accessToken}; path=/; samesite=strict;`;
 
     router.replace("/lobby");

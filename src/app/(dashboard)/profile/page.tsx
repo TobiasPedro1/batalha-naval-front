@@ -6,8 +6,9 @@
  */
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -36,6 +37,8 @@ import {
   Medal,
   ArrowRight,
   Zap,
+  Copy,
+  Check,
 } from "lucide-react";
 
 /**
@@ -95,6 +98,19 @@ export default function ProfilePage() {
   const router = useRouter();
   const { data: user, isLoading, isError } = useUserProfile();
 
+  // --- ESTADO PARA O BOTÃO DE COPIAR ---
+  const [hasCopied, setHasCopied] = useState(false);
+
+  // Fallback caso o backend ainda não esteja enviando o ID na resposta
+  const userId = user?.id || "ID-INDISPONIVEL";
+
+  const handleCopyId = () => {
+    if (userId === "ID-INDISPONIVEL") return;
+    navigator.clipboard.writeText(userId);
+    setHasCopied(true);
+    setTimeout(() => setHasCopied(false), 2000);
+  };
+
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -139,7 +155,7 @@ export default function ProfilePage() {
   const unlockedCount = getUnlockedMedalCount(medals);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-8 animate-in fade-in duration-300">
       {/* Page Header */}
       <div className="mb-8">
         <Button
@@ -151,7 +167,7 @@ export default function ProfilePage() {
         </Button>
         <div>
           <h1 className="text-4xl font-bold text-white tracking-tight">
-            Perfil do Comandante
+            Meu Perfil
           </h1>
           <p className="text-cyan-400/70 mt-2 text-lg">
             Sua carreira e conquistas
@@ -159,33 +175,56 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Player Identity Card */}
+      {/* Player Identity Card - ATUALIZADO IGUAL AO [ID] */}
       <Card className="mb-6 bg-slate-900/50 border-slate-800 rounded-2xl overflow-hidden">
         <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            {/* Avatar and Info */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
-              {/* Avatar */}
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-4xl border-[3px] border-cyan-400 shadow-lg shadow-cyan-500/20">
-                ⚓
+              <div className="w-24 h-24 rounded-full overflow-hidden border-[3px] border-cyan-400 shadow-lg shadow-cyan-500/20 flex-shrink-0">
+                <Image
+                  src="/mortyy.jpg"
+                  alt="Avatar"
+                  width={96}
+                  height={96}
+                  className="object-cover w-full h-full"
+                />
               </div>
 
-              {/* Info */}
               <div>
-                <h2 className="text-2xl font-bold text-white mb-2">
+                <h2 className="text-2xl font-bold text-white mb-3">
                   {user.username}
                 </h2>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-cyan-500/15 border border-cyan-500/30">
-                  <span className="text-sm">{rank.icon}</span>
-                  <span className="text-sm font-semibold text-cyan-400">
-                    {rank.title}
-                  </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Badge de Patente */}
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/15 border border-cyan-500/30">
+                    <span className="text-sm">{rank.icon}</span>
+                    <span className="text-sm font-semibold text-cyan-400">
+                      {rank.title}
+                    </span>
+                  </div>
+
+                  {/* Badge de ID com Botão de Copiar */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700">
+                    <span className="text-xs text-slate-400 font-mono">
+                      ID: {userId.substring(0, 8)}...
+                    </span>
+                    <button
+                      onClick={handleCopyId}
+                      className="text-slate-400 hover:text-white transition-colors p-1 rounded-md hover:bg-slate-700 active:scale-90"
+                      title="Copiar meu ID"
+                    >
+                      {hasCopied ? (
+                        <Check className="w-3.5 h-3.5 text-green-400" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="hidden md:flex items-center gap-6 px-6">
+            <div className="flex flex-row items-center gap-8 px-2 md:px-6 w-full md:w-auto justify-around md:justify-end border-t md:border-t-0 border-slate-800 pt-4 md:pt-0">
               <div className="text-center">
                 <p className="text-3xl font-bold text-white">{unlockedCount}</p>
                 <p className="text-xs text-slate-400 mt-1">Medalhas</p>
@@ -224,7 +263,7 @@ export default function ProfilePage() {
         />
       </div>
 
-      {/* Detailed Stats */}
+      {/* Detailed Stats - MANTIDO DO ORIGINAL POR SER O PRÓPRIO PERFIL */}
       <Card className="mb-6 bg-slate-900/50 border-slate-800 rounded-2xl overflow-hidden">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
@@ -297,7 +336,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Medals Showcase */}
+      {/* Medals Showcase - MANTIDO DO ORIGINAL */}
       <Card className="bg-slate-900/50 border-slate-800 rounded-2xl">
         <CardHeader>
           <div className="flex items-center justify-between">

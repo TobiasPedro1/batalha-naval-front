@@ -30,16 +30,15 @@ export const useUserProfile = () => {
     queryKey: userProfileKeys.profile(),
     queryFn: async () => {
       const apiData = await authService.getProfile();
-      const storedUsername =
-        typeof window !== "undefined" ? localStorage.getItem("username") : "";
+
+      //O apiData traz o id e o username diretamente da sua API!
       return {
         ...apiData,
         gamesPlayed: apiData.wins + apiData.losses,
-        username: storedUsername || "JOGADOR",
       };
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes - profile doesn't change often
-    gcTime: 10 * 60 * 1000, // 10 minutes cache
+    staleTime: 5 * 60 * 1000, // 5 minutos
+    gcTime: 10 * 60 * 1000, // 10 minutos
     retry: 1, // Only retry once for auth failures
   });
 };
@@ -84,4 +83,21 @@ export const usePlayerProfile = (userId: string | null) => {
     enabled: !!userId, // Só executa a query se tivermos um ID válido (quando o modal abrir)
     staleTime: 1000 * 60 * 5, // Mantém o dado em cache por 5 minutos para evitar spam na API
   });
+};
+
+/**
+ * Calculate the next rank goal based on current wins
+ *
+ * @param wins - Number of current wins
+ * @returns Object containing next goal and current level base
+ */
+export const getNextRankGoal = (
+  wins: number,
+): { nextGoal: number; currentBase: number } => {
+  if (wins >= 100) return { nextGoal: 100, currentBase: 100 }; // Max rank reached
+  if (wins >= 50) return { nextGoal: 100, currentBase: 50 };
+  if (wins >= 25) return { nextGoal: 50, currentBase: 25 };
+  if (wins >= 10) return { nextGoal: 25, currentBase: 10 };
+  if (wins >= 5) return { nextGoal: 10, currentBase: 5 };
+  return { nextGoal: 5, currentBase: 0 };
 };

@@ -2,6 +2,8 @@
 import { MatchStatus, ShipOrientation, CellState } from "./game-enums";
 
 export interface UserProfile {
+  id: string;
+  username: string;
   rankPoints: number;
   wins: number;
   losses: number;
@@ -14,7 +16,6 @@ export interface AuthResponse {
   profile: UserProfile;
 }
 export interface UserDetails extends UserProfile {
-  username: string;
   gamesPlayed: number;
 }
 export interface LeaderBoardResponse {

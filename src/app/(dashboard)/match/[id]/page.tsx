@@ -60,10 +60,8 @@ export default function MatchPage() {
   if (error || !gameState) {
     return (
       <div className="flex h-screen flex-col items-center justify-center bg-gray-900 text-white gap-4">
-        <h2 className="text-xl text-red-500">Falha na Comunicação</h2>
-        <p className="text-gray-400">
-          Não foi possível carregar os dados da batalha.
-        </p>
+        <h2 className="text-xl text-red-500">Peidou!</h2>
+        <p className="text-gray-400">Seu adversário não tankou e quitou.</p>
         <button
           onClick={() => router.push("/lobby")}
           className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 transition"

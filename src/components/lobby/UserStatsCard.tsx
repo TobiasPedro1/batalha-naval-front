@@ -12,9 +12,11 @@ import {
   useUserProfile,
   getUserRank,
   getWinRate,
+  getNextRankGoal,
 } from "@/hooks/queries/useUserProfile";
 import Image from "next/image";
 import { Trophy, Swords, Target, Crosshair, Medal } from "lucide-react";
+
 /**
  * Skeleton loader for stats
  */
@@ -111,6 +113,19 @@ export const UserStatsCard: React.FC = () => {
   const gamesPlayed = user.wins + user.losses;
   const winRate = getWinRate(user.wins, gamesPlayed);
 
+  const { nextGoal, currentBase } = getNextRankGoal(user.wins);
+
+  // Se for Almirante (100+ vitórias), o progresso é sempre 100%
+  const isMaxRank = user.wins >= 100;
+
+  // Calculamos a percentagem baseada apenas no "degrau" atual
+  // Exemplo: De 10 a 25 vitórias. Se tem 15, completou 5 de 15 necessários (33%)
+  const winsInCurrentLevel = user.wins - currentBase;
+  const winsNeededForNextLevel = nextGoal - currentBase;
+  const progressPercentage = isMaxRank
+    ? 100
+    : Math.min((winsInCurrentLevel / winsNeededForNextLevel) * 100, 100);
+
   return (
     <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm shadow-xl overflow-hidden h-half">
       <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
@@ -177,16 +192,18 @@ export const UserStatsCard: React.FC = () => {
         <div className="p-3 rounded-md bg-naval-bg">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs text-naval-text-muted">
-              Progresso para próximo rank
+              {isMaxRank
+                ? "Patente Máxima Alcançada"
+                : "Progresso para próximo rank"}
             </span>
             <span className="text-xs text-naval-text-secondary">
-              {user.wins}/10 vitórias
+              {isMaxRank ? "MAX" : `${user.wins}/${nextGoal} vitórias`}
             </span>
           </div>
           <div className="h-2 bg-naval-border rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-naval-action to-naval-action-hover transition-all duration-500"
-              style={{ width: `${Math.min((user.wins / 10) * 100, 100)}%` }} // TODO: Aqui nao ta funcionando ainda, dar um jeito de pegar um, nextrank
+              style={{ width: `${progressPercentage}%` }}
             />
           </div>
         </div>

@@ -116,3 +116,18 @@ export const useMoveShipMutation = (matchId: string) => {
     },
   });
 };
+
+export const useCancelMatchMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (matchId: string) => matchService.cancelMatch(matchId),
+    onSuccess: () => {
+      // Invalida a lista de convites para que o item desapareça instantaneamente da tela
+      queryClient.invalidateQueries({ queryKey: ["invites"] });
+    },
+    onError: (error) => {
+      console.error("Erro ao cancelar o convite:", error);
+    },
+  });
+};

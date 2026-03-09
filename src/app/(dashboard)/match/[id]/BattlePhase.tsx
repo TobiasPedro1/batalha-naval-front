@@ -340,8 +340,28 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
     }
   };
 
+  // // Detecta game over via polling (quando o oponente vence, timeout, ou meu tiro vencedor)
+  // // Usa resolvedIsWinner que combina match.isWinner (parent) + didIWinByShootingRef (fallback)
+  // const gameOverHandledRef = useRef(false);
+  // useEffect(() => {
+  //   if (isFinished && !gameOverHandledRef.current) {
+  //     gameOverHandledRef.current = true;
+  //
+  //     // Invalida cache de perfil e leaderboard para manter stats atualizados
+  //     queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+  //     queryClient.invalidateQueries({ queryKey: ["leaderBoard"] });
+  //
+  //     if (resolvedIsWinner === true) {
+  //       playVictory();
+  //       addToast("Você venceu a batalha!", "victory", 5000);
+  //     } else if (resolvedIsWinner === false) {
+  //       addToast("Você perdeu a batalha.", "defeat", 5000);
+  //     }
+  //     // Se resolvedIsWinner === null, não mostra toast (indeterminado, raro)
+  //   }
+  // }, [isFinished, resolvedIsWinner, addToast, playVictory, queryClient]);
+
   // Detecta game over via polling (quando o oponente vence, timeout, ou meu tiro vencedor)
-  // Usa resolvedIsWinner que combina match.isWinner (parent) + didIWinByShootingRef (fallback)
   const gameOverHandledRef = useRef(false);
   useEffect(() => {
     if (isFinished && !gameOverHandledRef.current) {
@@ -352,12 +372,17 @@ export default function BattlePhase({ match }: BattlePhaseProps) {
       queryClient.invalidateQueries({ queryKey: ["leaderBoard"] });
 
       if (resolvedIsWinner === true) {
-        playVictory();
-        addToast("Você venceu a batalha!", "victory", 5000);
+        setTimeout(() => {
+          playVictory();
+          addToast("Você venceu a batalha!", "victory", 5000);
+        }, 2500); // 2500 ms = 2.5 segundos
+
       } else if (resolvedIsWinner === false) {
-        addToast("Você perdeu a batalha.", "defeat", 5000);
+        // Opcional: Colocar um pequeno atraso dramático na derrota também
+        setTimeout(() => {
+          addToast("Você perdeu a batalha.", "defeat", 5000);
+        }, 1000);
       }
-      // Se resolvedIsWinner === null, não mostra toast (indeterminado, raro)
     }
   }, [isFinished, resolvedIsWinner, addToast, playVictory, queryClient]);
 
